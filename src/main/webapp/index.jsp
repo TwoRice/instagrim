@@ -10,18 +10,11 @@
 <!DOCTYPE html>
 <html>
     
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Instagrim</title>
-        <link rel="stylesheet" type="text/css" href="Styles.css" />
-    </head>
+    <%@include file="head.jsp" %>
     
     <body>
         
-        <header>
-            <h1>InstaGrim ! </h1>
-            <h2>Your world in Black and White</h2>
-        </header>
+        <%@include file="header.jsp" %>
         
         <nav>
             <ul>             
@@ -44,12 +37,7 @@
             </ul>
         </nav>
             
-        <footer>
-            <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
-                <li>&COPY; Andy C</li>
-            </ul>
-        </footer>
+        <%@include file="footer.jsp" %>
             
     </body>
     
