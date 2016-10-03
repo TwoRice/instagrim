@@ -13,7 +13,7 @@
         <div class="row">
             <div class="col-xs-8">
                 <h2>
-                    <a href="/Instagrim/">InstaGrim <img src="logo.gif" style ="height:50px;width:50px;"></a>
+                    <a href="/Instagrim/">InstaGrim <img src="/Instagrim/logo.gif" style ="height:50px;width:50px;"></a>
                 </h2>
                 
             </div>    
