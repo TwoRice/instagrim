@@ -31,6 +31,8 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 /**
  * Servlet implementation class Image
  */
+
+//urlPatterns which use this servlet
 @WebServlet(urlPatterns = {
     "/Image",
     "/Image/*",
@@ -53,7 +55,7 @@ public class Image extends HttpServlet {
      */
     public Image() {
         super();
-        // TODO Auto-generated constructor stub
+        //Maps url patterns "Image", "Images", "Thumb" to an integer in a hash map
         CommandsMap.put("Image", 1);
         CommandsMap.put("Images", 2);
         CommandsMap.put("Thumb", 3);
@@ -68,24 +70,32 @@ public class Image extends HttpServlet {
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      * response)
+     * 
+     * Get Method for this servlet. Run upon user using one of the url patterns for this servlet
+     * 
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO Auto-generated method stub
+        //Splits Url arguments up with / delimiter
         String args[] = Convertors.SplitRequestPath(request);
         int command;
         try {
+            //Gets first argument from url and converts it to its integer value (see public Image())
             command = (Integer) CommandsMap.get(args[1]);
         } catch (Exception et) {
             error("Bad Operator", response);
             return;
         }
+        //Switch statement to test which of the three url patterns the first argument is
         switch (command) {
+            //Displays Image using the picid given in second argument of url
             case 1:
                 DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response);
                 break;
+            //Displays user from second argument of url's images
             case 2:
                 DisplayImageList(args[2], request, response);
                 break;
+            //Displays thumbnail for picture using the picid given in the second argument of url 
             case 3:
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
                 break;
@@ -94,22 +104,38 @@ public class Image extends HttpServlet {
         }
     }
 
+    /**
+     * Requests a linked list filled with a user's pictures from Picture Model
+     * 
+     * @param user - string for username taken from the url
+     */
     private void DisplayImageList(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PicModel tm = new PicModel();
-        tm.setCluster(cluster);
-        java.util.LinkedList<Pic> lsPics = tm.getPicsForUser(User);
+        PicModel pm = new PicModel();
+        pm.setCluster(cluster);
+        //Requests a linked list of the user's pictures from the pic model
+        java.util.LinkedList<Pic> lsPics = pm.getPicsForUser(User);
+        //sets request for UserPics.jsp oage
         RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
+        //sets the request attribute to the linked list of the user's pictures
         request.setAttribute("Pics", lsPics);
+        //forwards request to UserPics.jsp page
         rd.forward(request, response);
 
     }
 
+    /**
+     * Requests 
+     * 
+     * @param type - int to specify if the image is a processed image or a thumbnail
+     * @param Image - string for the UUID of the image taken from the url
+     */
     private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
-        PicModel tm = new PicModel();
-        tm.setCluster(cluster);
+        PicModel pm = new PicModel();
+        pm.setCluster(cluster);
   
         
-        Pic p = tm.getPic(type,java.util.UUID.fromString(Image));
+        //Requests the picture with the UUID from the url from the pic model
+        Pic p = pm.getPic(type,java.util.UUID.fromString(Image));
         
         OutputStream out = response.getOutputStream();
 
