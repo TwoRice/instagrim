@@ -17,29 +17,32 @@
         <%@include file="header.jsp" %>
          
         <article>
-            <h1>Your Pics</h1>
+            <h1>Your Images</h1>
             <%
+                //Gets the linked list of user's pictures from the servlet's request
                 java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
                 if (lsPics == null) {
             %>
-            <p>No Pictures found</p>
+            <p>No Images found</p>
             <%
+                //Iterates through the linked list of pictures displays them on the web page
                 } else {
                 Iterator<Pic> iterator;
                 iterator = lsPics.iterator();
                 while (iterator.hasNext()) {
                 Pic p = (Pic) iterator.next();
             %>
-            <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+            <!--Creates link to picture -->
+            <a href="/Instagrim/Image/<%=p.getSUUID()%>" >
+            <!--Displays picture thumbnail on page --> 
+            <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
             <%
                 }
                 }
             %>
         
         </article>
-        
-        <%@include file="footer.jsp" %>
-        
+                
     </body>
     
 </html>
