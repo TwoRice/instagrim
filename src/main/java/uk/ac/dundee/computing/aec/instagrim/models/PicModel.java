@@ -132,59 +132,80 @@ public class PicModel {
         return pad(img, 4);
     }
    
-    public java.util.LinkedList<Pic> getPicsForUser(String User) {
+   /**
+    * Retrieves all of a specific user's pictures from the database
+    * 
+    * @param User - username for user's pictures to be retrieved
+    * @return Linked list fill with the user's pictures
+    */ 
+   public java.util.LinkedList<Pic> getPicsForUser(String User) {
         java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("select picid from userpiclist where user =?");
-        ResultSet rs = null;
-        BoundStatement boundStatement = new BoundStatement(ps);
-        rs = session.execute( // this is where the query is executed
-                boundStatement.bind( // here you are binding the 'boundStatement'
+        //Prepares SQL statement to retrieve pictures from the database
+        PreparedStatement ps_selectUserPics = session.prepare("select picid from userpiclist where user =?");
+        ResultSet rs_selectUserPics = null;
+        BoundStatement boundStatement = new BoundStatement(ps_selectUserPics);
+        //Binds the prepared statement with the user parameter
+        rs_selectUserPics = session.execute( 
+                boundStatement.bind( 
                         User));
-        if (rs.isExhausted()) {
+        //returns null if result set is empty, i.e. User has no uploaded pictures
+        if (rs_selectUserPics.isExhausted()) {
             System.out.println("No Images returned");
             return null;
         } else {
-            for (Row row : rs) {
-                Pic pic = new Pic();
+            //Iterates through pictures in result set and adds them to the linked list
+            for (Row row : rs_selectUserPics) {
+                Pic picture = new Pic();
                 java.util.UUID UUID = row.getUUID("picid");
                 System.out.println("UUID" + UUID.toString());
-                pic.setUUID(UUID);
-                Pics.add(pic);
+                picture.setUUID(UUID);
+                Pics.add(picture);
 
             }
         }
         return Pics;
     }
 
-    public Pic getPic(int image_type, java.util.UUID picid) {
+   /**
+    * Retrieves a specific picture from the database
+    * 
+    * @param image_type - integer to specify if image should be retrieved as a processed image or a thumbnail
+    * @param picid - UUID for picture to be retrieved
+    * @return picture retrieved from the database
+    */ 
+   public Pic getPic(int image_type, java.util.UUID picid) {
         Session session = cluster.connect("instagrim");
         ByteBuffer bImage = null;
         String type = null;
         int length = 0;
         try {
             Convertors convertor = new Convertors();
-            ResultSet rs = null;
-            PreparedStatement ps = null;
+            ResultSet rs_selectPic = null;
+            PreparedStatement ps_selectPic = null;
          
-            if (image_type == Convertors.DISPLAY_IMAGE) {
-                
-                ps = session.prepare("select image,imagelength,type from pics where picid =?");
+            //Prepares SQL statement to retrieve an image from the database
+            if (image_type == Convertors.DISPLAY_IMAGE) {              
+                ps_selectPic = session.prepare("select image,imagelength,type from pics where picid =?");
+            //Prepares SQL statement to retrieve a thumbnail from the database
             } else if (image_type == Convertors.DISPLAY_THUMB) {
-                ps = session.prepare("select thumb,imagelength,thumblength,type from pics where picid =?");
+                ps_selectPic = session.prepare("select thumb,imagelength,thumblength,type from pics where picid =?");
+            //Prepares SQL statement to retrieve a processed image from the database
             } else if (image_type == Convertors.DISPLAY_PROCESSED) {
-                ps = session.prepare("select processed,processedlength,type from pics where picid =?");
+                ps_selectPic = session.prepare("select processed,processedlength,type from pics where picid =?");
             }
-            BoundStatement boundStatement = new BoundStatement(ps);
-            rs = session.execute( // this is where the query is executed
-                    boundStatement.bind( // here you are binding the 'boundStatement'
+            BoundStatement boundStatement = new BoundStatement(ps_selectPic);
+            rs_selectPic = session.execute( 
+                    //Binds the prepared statement with the picid parameter
+                    boundStatement.bind( 
                             picid));
 
-            if (rs.isExhausted()) {
+            if (rs_selectPic.isExhausted()) {
                 System.out.println("No Images returned");
                 return null;
             } else {
-                for (Row row : rs) {
+                //Gets the image bytes and the image length from the result set
+                for (Row row : rs_selectPic) {
                     if (image_type == Convertors.DISPLAY_IMAGE) {
                         bImage = row.getBytes("image");
                         length = row.getInt("imagelength");
@@ -206,6 +227,7 @@ public class PicModel {
             return null;
         }
         session.close();
+        //Creates picture object using the image bytes, image length and image type from the result set
         Pic p = new Pic();
         p.setPic(bImage, length, type);
 
