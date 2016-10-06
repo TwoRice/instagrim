@@ -8,9 +8,68 @@ and open the template in the editor.
     Author     : Administrator
 */
 
+.header a:link, a:visited {
+    
+    color: #fcfaff;
+    text-decoration: none;
+    
+}
 
-nav {
-    text-align: left;
-    border: 2px;
-    float: right;
+.header a:hover, a:active {
+    
+    color: #fcfaff;
+    text-decoration: none;
+    
+}
+
+.row {
+    
+    background-color: #eadec0;
+    height: 80px;
+    padding-right: 10px;
+    padding-left: 10px;
+           
+}
+
+/*The following help tip code was taken from W3 schools and tutorialzine.com */
+.helptip{
+    
+    position: relative;
+    display: inline-block;
+    background-color: #eadec0;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    color: #fff;
+    cursor: default;
+    font-weight: bold;
+    
+}
+
+.helptip p{
+    
+    visibility: hidden;
+    position: absolute;
+    width: 160px;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    background-color: #555;
+    color: #fff;
+    z-index: 1;
+    top: -5px;
+    left: 200%;
+    margin-left: -60%;
+    opacity: 0;
+    transition: opacity 1s;
+    font-size: 13px;
+    
+}
+
+.helptip:hover p{
+    
+    visibility: visible;
+    opacity: 1;
+    
 }
