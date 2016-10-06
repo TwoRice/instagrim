@@ -16,12 +16,15 @@
 
 <%@page import="java.util.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="com.datastax.driver.core.Cluster" %>
 <%@page import="uk.ac.dundee.computing.aec.instagrim.stores.*" %>
+<%@page import="uk.ac.dundee.computing.aec.instagrim.models.PicModel" %>
+<%@page import="uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts" %>
 <!DOCTYPE html>
 <html>
     
     <%@include file="head.jsp" %>
-        
+
     <body>
         
         <%@include file="header.jsp" %>
@@ -29,8 +32,13 @@
         <article>         
             <h1>Recent</h1>
             <% 
-                java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
-                if(lsPics == null){          
+                Cluster cluster = CassandraHosts.getCluster();
+                PicModel pm = new PicModel();
+                pm.setCluster(cluster);
+                
+                java.util.LinkedList<Pic> lsPics = null;
+                if(lsPics == null){
+                    log("lspic is null hello");
             %>
             <p>nothing here</p>
             <%
