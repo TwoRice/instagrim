@@ -20,8 +20,27 @@
             
             <form method="POST"  action="Register">
                 <ul>
-                    <li>User Name <input type="text" name="username"></li>
-                    <li>Password <input type="password" name="password"></li>
+                    <li>
+                        User Name <input type="text" name="username">
+                        <%
+                            boolean isValid;
+                            
+                            try{
+                                isValid = (boolean) request.getAttribute("validUsername");
+                            }
+                            catch(NullPointerException e){
+                                isValid = true;
+                            }
+                            
+                            if(!isValid){
+                        %>
+                        <span class="logRegError">Username already exists</span>
+                        <%}%>
+                    </li>
+                    
+                    <li>
+                        Password <input type="password" name="password">
+                    </li>
                 </ul>
                 
                 <br/>
@@ -29,8 +48,6 @@
             </form>
 
         </article>
-        
-        <%@include file="footer.jsp" %>
         
     </body>
     
