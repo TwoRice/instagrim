@@ -132,6 +132,30 @@ public class PicModel {
         return pad(img, 4);
     }
    
+   
+   public java.util.LinkedList<Pic> getRecentPics(){
+        java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
+        Session session = cluster.connect("instagrim");
+        ResultSet rs_selectRecentPics = null;
+        
+        rs_selectRecentPics = session.execute("select picid from userpiclist");
+        if(rs_selectRecentPics.isExhausted()){
+            System.out.println("No Images returned");
+            return null;
+        }
+        else{
+            for(Row row : rs_selectRecentPics){
+                Pic picture = new Pic();
+                java.util.UUID UUID = row.getUUID("picid");
+                System.out.println("UUID" + UUID.toString());
+                picture.setUUID(UUID);
+                Pics.add(picture);  
+            }
+        }
+       
+       return Pics;
+   }
+   
    /**
     * Retrieves all of a specific user's pictures from the database
     * 
