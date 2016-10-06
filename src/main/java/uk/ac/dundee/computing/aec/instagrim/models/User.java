@@ -27,6 +27,24 @@ public class User {
         
     }
     
+    public boolean validUserName(String username){
+        
+        Session session = cluster.connect("instagrim");
+        PreparedStatement ps_usernameExists = session.prepare("select login from userprofiles where login = ?");
+        BoundStatement bs = new BoundStatement(ps_usernameExists);
+        ResultSet rs_usernameExists = null;
+        
+        rs_usernameExists = session.execute(bs.bind(username));
+        
+        if(rs_usernameExists.isExhausted()){
+            return true;
+        }
+        else{
+            return false;
+        }
+               
+    }
+    
     public boolean RegisterUser(String username, String Password){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
