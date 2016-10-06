@@ -34,6 +34,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 
 //urlPatterns which use this servlet
 @WebServlet(urlPatterns = {
+    "/Instagrim",
     "/Image",
     "/Image/*",
     "/Thumb/*",
@@ -59,6 +60,7 @@ public class Image extends HttpServlet {
         CommandsMap.put("Image", 1);
         CommandsMap.put("Images", 2);
         CommandsMap.put("Thumb", 3);
+        CommandsMap.put("", 4);
 
     }
 
@@ -99,6 +101,8 @@ public class Image extends HttpServlet {
             case 3:
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
                 break;
+            case 4:
+                DisplayImageList("all", request, response);
             default:
                 error("Bad Operator", response);
         }
@@ -112,10 +116,20 @@ public class Image extends HttpServlet {
     private void DisplayImageList(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel pm = new PicModel();
         pm.setCluster(cluster);
-        //Requests a linked list of the user's pictures from the pic model
-        java.util.LinkedList<Pic> lsPics = pm.getPicsForUser(User);
-        //sets request for UserPics.jsp oage
-        RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
+        java.util.LinkedList<Pic> lsPics;
+        RequestDispatcher rd;
+        
+        if(User == "all"){
+            lsPics = pm.getRecentPics();
+            rd = request.getRequestDispatcher("/index.jsp");
+        }
+        else{
+            //Requests a linked list of the user's pictures from the pic model
+            lsPics = pm.getPicsForUser(User);
+            //sets request for UserPics.jsp page
+            rd = request.getRequestDispatcher("/UsersPics.jsp");
+        }     
+        
         //sets the request attribute to the linked list of the user's pictures
         request.setAttribute("Pics", lsPics);
         //forwards request to UserPics.jsp page
