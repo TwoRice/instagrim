@@ -36,9 +36,9 @@
                 PicModel pm = new PicModel();
                 pm.setCluster(cluster);
                 
-                java.util.LinkedList<Pic> lsPics = null;
+                java.util.LinkedList<Pic> lsPics = pm.getRecentPics();
                 if(lsPics == null){
-                    log("lspic is null hello");
+                    System.out.println("lspic is null hello");
             %>
             <p>nothing here</p>
             <%
