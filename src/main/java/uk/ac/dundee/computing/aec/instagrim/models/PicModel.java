@@ -134,7 +134,7 @@ public class PicModel {
    
    
    public java.util.LinkedList<Pic> getRecentPics(){
-        java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
+       java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
         ResultSet rs_selectRecentPics = null;
         
