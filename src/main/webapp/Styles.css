@@ -8,6 +8,13 @@ and open the template in the editor.
     Author     : Administrator
 */
 
+/******************************************************************************/
+/***************************CSS for header page********************************/
+/******************************************************************************/
+
+
+
+/*Removes hyperlink styling on links*/
 .header a:link, a:visited {
     
     color: #fcfaff;
@@ -15,6 +22,7 @@ and open the template in the editor.
     
 }
 
+/*Removes hyperlink styling on links*/
 .header a:hover, a:active {
     
     color: #fcfaff;
@@ -22,16 +30,25 @@ and open the template in the editor.
     
 }
 
-.row {
+/*Styles the header background*/
+.headerRow {
     
-    background-color: #eadec0;
+    background-color: #555;
     height: 80px;
     padding-right: 10px;
     padding-left: 10px;
            
 }
 
-/*The following help tip code was taken from W3 schools and tutorialzine.com */
+
+
+/******************************************************************************/
+/*********************CSS for login and register pages*************************/
+/******************************************************************************/
+
+
+
+/*The following help tip code was taken from W3schools.com and tutorialzine.com */
 .helptip{
     
     position: relative;
@@ -71,5 +88,42 @@ and open the template in the editor.
     
     visibility: visible;
     opacity: 1;
+    
+}
+
+
+
+/******************************************************************************/
+/***************************CSS for image pages********************************/
+/******************************************************************************/
+
+
+
+/*The following code was taken from stackoverflow 
+(http://stackoverflow.com/questions/18673900/how-to-center-and-crop-an-image-to-square-with-css) */
+
+/*Sets size and crops thumbnail image to a sqaure*/
+.thumbnail{ 
+
+    width: 225px;
+    height: 225px;
+    overflow: hidden;
+    /*Centres thumbnail to parent div*/
+    margin: 0 auto;
+    position: relative;
+    
+}
+
+/*Sets the thumbnail image centre to be the centre of the cropped and resized thumbnail*/
+.thumbnail img{
+    
+    position: absolute;
+    left: -1000%;
+    right: -1000%;
+    top: -1000%;
+    bottom: -1000%;
+    margin: auto;
+    min-height: 100%;
+    min-width: 100%;
     
 }
