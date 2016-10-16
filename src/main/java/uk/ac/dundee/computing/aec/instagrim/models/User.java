@@ -27,25 +27,50 @@ public class User {
         
     }
     
-    public boolean validUserName(String username){
+    public boolean isValidUserName(String username){
         
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps_usernameExists = session.prepare("select login from userprofiles where login = ?");
-        BoundStatement bs = new BoundStatement(ps_usernameExists);
         ResultSet rs_usernameExists = null;
         
-        rs_usernameExists = session.execute(bs.bind(username));
+        rs_usernameExists = session.execute("select login from userprofiles");
         
-        if(rs_usernameExists.isExhausted()){
-            return true;
+        if(!rs_usernameExists.isExhausted()){
+            for(Row row : rs_usernameExists){
+                String storedUsername = row.getString("login").toLowerCase();
+                username = username.toLowerCase();
+                
+                if(username.equals(storedUsername)){
+                    return false;
+                }
+            }
         }
-        else{
-            return false;
-        }
-               
+        
+        return true;              
     }
     
-    public boolean RegisterUser(String username, String Password){
+    public boolean isValidEmail(String email){
+        
+        Session session = cluster.connect("instagrim");
+        ResultSet rs_emailExists = null;
+        
+        rs_emailExists = session.execute("select email from userprofiles");
+        
+        if(!rs_emailExists.isExhausted()){
+            for(Row row : rs_emailExists){
+                String storedEmail = row.getString("email").toLowerCase();
+                email = email.toLowerCase();
+                
+                if(email.equals(storedEmail)){
+                    return false;
+                }
+            }
+        }
+        
+        return true; 
+        
+    }
+    
+    public boolean RegisterUser(String username, String Password, String firstName, String lastName, String email){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
         try {
@@ -55,12 +80,10 @@ public class User {
             return false;
         }
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("insert into userprofiles (login,password) Values(?,?)");
+        PreparedStatement ps = session.prepare("insert into userprofiles (login,password,first_name,last_name,email) Values(?,?,?,?,?)");
        
         BoundStatement boundStatement = new BoundStatement(ps);
-        session.execute( // this is where the query is executed
-                boundStatement.bind( // here you are binding the 'boundStatement'
-                        username,EncodedPassword));
+        session.execute(boundStatement.bind(username,EncodedPassword, firstName, lastName, email));
         //We are assuming this always works.  Also a transaction would be good here !
         
         return true;
@@ -76,25 +99,33 @@ public class User {
             return false;
         }
         Session session = cluster.connect("instagrim");
-        PreparedStatement ps = session.prepare("select password from userprofiles where login =?");
-        ResultSet rs = null;
-        BoundStatement boundStatement = new BoundStatement(ps);
-        rs = session.execute( // this is where the query is executed
-                boundStatement.bind( // here you are binding the 'boundStatement'
-                        username));
-        if (rs.isExhausted()) {
-            System.out.println("No Images returned");
-            return false;
+        PreparedStatement ps_usernameCheck = session.prepare("select password from userprofiles where login =?");
+        ResultSet rs_usernameCheck = null;
+        BoundStatement boundStatement = new BoundStatement(ps_usernameCheck);
+        rs_usernameCheck = session.execute(boundStatement.bind(username));
+        if (rs_usernameCheck.isExhausted()) {
+            
+            PreparedStatement ps_emailCheck = session.prepare("select password from userprofiles where email =? allow filtering");
+            BoundStatement bs = new BoundStatement(ps_emailCheck);
+            ResultSet rs_emailCheck = session.execute(bs.bind(username));
+            
+            if(!rs_emailCheck.isExhausted()){
+                for(Row row : rs_emailCheck){ 
+                    
+                    String StoredPass = row.getString("password");
+                    if (StoredPass.compareTo(EncodedPassword) == 0){return true;}
+                    
+                }
+            }              
         } else {
-            for (Row row : rs) {
-               
+            for (Row row : rs_usernameCheck) {
+                
                 String StoredPass = row.getString("password");
-                if (StoredPass.compareTo(EncodedPassword) == 0)
-                    return true;
+                if (StoredPass.compareTo(EncodedPassword) == 0){return true;}
+                
             }
         }
-   
-    
+       
     return false;  
     }
        public void setCluster(Cluster cluster) {
