@@ -15,15 +15,28 @@ and open the template in the editor.
 
 
 /*Removes hyperlink styling on links*/
-.header a:link, a:visited {
+.headerRow a:link{
     
     color: #fcfaff;
     text-decoration: none;
     
 }
 
-/*Removes hyperlink styling on links*/
-.header a:hover, a:active {
+.headerRow a:visted{
+    
+    color: #fcfaff;
+    text-decoration: none;
+    
+}
+
+.headerRow a:hover{
+    
+    color: #fcfaff;
+    text-decoration: none;
+    
+}
+
+.headerRow a:active{
     
     color: #fcfaff;
     text-decoration: none;
@@ -142,7 +155,7 @@ form .row .col-xs-12, .col-lg-6{
     
 }
 
-/*The following code was taken from stackoverflow 
+/*The following code for thumbnail was taken from stackoverflow 
 (http://stackoverflow.com/questions/18673900/how-to-center-and-crop-an-image-to-square-with-css) */
 
 /*Sets size and crops thumbnail image to a sqaure*/
@@ -168,5 +181,53 @@ form .row .col-xs-12, .col-lg-6{
     margin: auto;
     min-height: 100%;
     min-width: 100%;
+    
+}
+
+.commentLink{
+    
+    width: 225px;
+    position: relative;
+    margin: 0 auto;
+    
+}
+
+.commentLink a:link{
+    
+    text-decoration: none;
+    color: #000;
+    
+}
+
+.commentLink a:visited{
+    
+    text-decoration: none;
+    color: #000;
+    
+}
+
+.commentLink a:hover{
+    
+    text-decoration: none;
+    color: #000;
+    
+}
+
+.commentLink a:active{
+    
+    text-decoration: none;
+    color: #000;
+    
+}
+
+
+/******************************************************************************/
+/***************************CSS for comment pages******************************/
+/******************************************************************************/
+
+.comment{
+   
+    background-color: #DDD;
+    border: solid #000;
     
 }
