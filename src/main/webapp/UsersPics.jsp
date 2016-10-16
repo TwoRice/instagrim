@@ -22,20 +22,25 @@
                 <div class="col-sm-2">
                     
                     <div id="profilePic">
-                        <%
-                            Pic profilePic = new Pic();
-                            profilePic = (Pic) request.getAttribute("profilePic");
-                            if(profilePic == null){
-                        %>
-                        <a href="#"><img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture"></a>
-                        <%}else{%>
-                        <a href="##"><img src="/Instagrim/Thumb/<%=profilePic.getSUUID()%>" alt="Profile Picture"></a>
-                        <%}%>
+                        <a href="#">
+                            <%
+                                Pic profilePic = new Pic();
+                                profilePic = (Pic) request.getAttribute("profilePic");
+                                if(profilePic == null){
+                            %>
+                            <img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture">
+                            <%}else{%>
+                            <img src="/Instagrim/Thumb/<%=profilePic.getSUUID()%>" alt="Profile Picture">
+                            <%}%>
+                        </a>    
                     </div>
                 </div>
                     
                 <div class ="col-sm-2">
-                    <div id="profileName">'s Profile</div>
+                    <%
+                        String username = (String) request.getAttribute("User");
+                    %>
+                    <div id="profileName"><%=username%>'s Profile</div>
                 </div>
                     
                 <div class="col-sm-8"></div>
@@ -80,6 +85,9 @@
                         <!--Thumbnail for image-->
                             <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
                     </div>
+                    <div class="commentLink">
+                        <a href="/Instagrim/Comments/"<%=p.getSUUID()%>>Comments</a>
+                    </div>    
                 </div>        
             <%
                         //Adds seconds image div to the div for large devices and then closes the large
@@ -89,8 +97,11 @@
                 <div class="col-sm-6">
                     <div class="thumbnail">
                         <a href="/Instagrim/Image/<%=p.getSUUID()%>" >
-                        <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+                        <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>    
                     </div>
+                    <div class="commentLink">
+                        <a href="/Instagrim/Comments">Comments</a>
+                    </div>     
                 </div>
             <!--closing tag for the large device div-->
             </div>    
