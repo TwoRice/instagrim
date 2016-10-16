@@ -16,25 +16,33 @@ public final class Keyspaces {
             //Add some keyspaces here
             String createkeyspace = "create keyspace if not exists instagrim  WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}";
             String CreatePicTable = "CREATE TABLE if not exists instagrim.Pics ("
-                    + " user varchar,"
-                    + " picid uuid, "
-                    + " interaction_time timestamp,"
-                    + " title varchar,"
-                    + " image blob,"
-                    + " thumb blob,"
-                    + " processed blob,"
-                    + " imagelength int,"
-                    + " thumblength int,"
-                    + "  processedlength int,"
-                    + " type  varchar,"
-                    + " name  varchar,"
-                    + " PRIMARY KEY (picid)"
+                    + "user varchar,\n"
+                    + "picid uuid,\n"
+                    + "interaction_time timestamp,\n"
+                    + "title varchar,\n"
+                    + "image blob,\n"
+                    + "thumb blob,\n"
+                    + "processed blob,\n"
+                    + "imagelength int,\n"
+                    + "thumblength int,\n"
+                    + "processedlength int,\n"
+                    + "type  varchar,\n"
+                    + "name  varchar,\n"
+                    + "comments set<uuid>,\n"
+                    + " PRIMARY KEY (picid)\n"
                     + ")";
+            String CreateCommentTable = "CREATE TABLE if not exists instagrim.comment ("
+                    + "commentid uuid,\n"
+                    + "user varchar,\n"
+                    + "comment text,\n"
+                    + "comment_added timestamp,\n"
+                    + "PRIMARY KEY (commentid)\n"
+                    + ");";
             String Createuserpiclist = "CREATE TABLE if not exists instagrim.userpiclist (\n"
                     + "picid uuid,\n"
                     + "user varchar,\n"
                     + "pic_added timestamp,\n"
-                    + "private boolean \n"
+                    + "private boolean,\n"
                     + "PRIMARY KEY (user,pic_added)\n"
                     + ") WITH CLUSTERING ORDER BY (pic_added desc);";
             String CreateAddressType = "CREATE TYPE if not exists instagrim.address (\n"
@@ -72,9 +80,18 @@ public final class Keyspaces {
                 SimpleStatement cqlQuery = new SimpleStatement(CreatePicTable);
                 session.execute(cqlQuery);
             } catch (Exception et) {
-                System.out.println("Can't create tweet table " + et);
+                System.out.println("Can't create pic table " + et);
             }
             System.out.println("" + Createuserpiclist);
+            
+            try {
+                SimpleStatement cqlQuery = new SimpleStatement(CreateCommentTable);
+                session.execute(cqlQuery);
+            }
+            catch (Exception et){
+                System.out.println("Can't create comment table " + et);
+            }
+            System.out.println("" + CreateCommentTable);
 
             try {
                 SimpleStatement cqlQuery = new SimpleStatement(Createuserpiclist);
