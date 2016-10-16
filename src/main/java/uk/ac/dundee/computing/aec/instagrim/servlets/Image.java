@@ -38,8 +38,6 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Image",
     "/Image/*",
     "/Thumb/*",
-    "/Profile",
-    "/Profile/*",
     "/Upload/",
     "/Upload/*"
 })
@@ -60,9 +58,8 @@ public class Image extends HttpServlet {
         super();
         //Maps url patterns "Image", "Images", "Thumb" to an integer in a hash map
         CommandsMap.put("Image", 1);
-        CommandsMap.put("Profile", 2);
-        CommandsMap.put("Thumb", 3);
-        CommandsMap.put("Upload", 4);
+        CommandsMap.put("Thumb", 2);
+        CommandsMap.put("Upload", 3);
 
     }
 
@@ -95,47 +92,16 @@ public class Image extends HttpServlet {
             case 1:
                 DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response);
                 break;
-            //Displays user from second argument of url's images
-            case 2:
-                DisplayProfile(args[2], request, response);
-                break;
             //Displays thumbnail for picture using the picid given in the second argument of url 
-            case 3:
+            case 2:
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
                 break;
-            case 4:
+            case 3:
                 RequestDispatcher rd = request.getRequestDispatcher("upload.jsp");
                 rd.forward(request, response);
             default:
                 error("Bad Operator", response);
         }
-    }
-
-    /**
-     * Requests a linked list filled with a user's pictures from Picture Model
-     * 
-     * @param user - string for username taken from the url
-     */
-    private void DisplayProfile(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        PicModel pm = new PicModel();
-        pm.setCluster(cluster);        
-        java.util.LinkedList<Pic> lsPics;
-        Pic profilePic = new Pic();
-        RequestDispatcher rd;
-        
-        //requests the user's profile picture from the pic model
-        profilePic = pm.getProfilePic(User);
-        //Requests a linked list of the user's pictures from the pic model
-        lsPics = pm.getPicsForUser(User);
-        //sets request for UserPics.jsp page
-        rd = request.getRequestDispatcher("/UsersPics.jsp");        
-        //sets a request attribute to the user's profile picture
-        request.setAttribute("profilePic", profilePic);
-        //sets an additional request attribute to the linked list of the user's pictures
-        request.setAttribute("Pics", lsPics);
-        //forwards request to UserPics.jsp page
-        rd.forward(request, response);
-
     }
 
     /**
@@ -195,7 +161,7 @@ public class Image extends HttpServlet {
              RequestDispatcher rd = request.getRequestDispatcher("upload.jsp");
              rd.forward(request, response);
         }
-        
+                
     }
 
     private void error(String mess, HttpServletResponse response) throws ServletException, IOException {
