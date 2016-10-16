@@ -22,7 +22,6 @@ import com.datastax.driver.core.utils.Bytes;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -134,7 +133,7 @@ public class PicModel {
    
    
    public java.util.LinkedList<Pic> getRecentPics(){
-       java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
+        java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
         Session session = cluster.connect("instagrim");
         ResultSet rs_selectRecentPics = null;
         
@@ -154,6 +153,34 @@ public class PicModel {
         }
        
        return Pics;
+   }
+   
+   public Pic getProfilePic(String username){
+       Pic profilePic = new Pic();
+       Session session = cluster.connect("instagrim");
+       
+       PreparedStatement ps_selectProfilePic = session.prepare("select profile_pic from userprofiles where login =?");
+       ResultSet rs_selectProfilePic = null;
+       BoundStatement bs = new BoundStatement(ps_selectProfilePic);
+       
+       rs_selectProfilePic = session.execute(bs.bind(username));
+       
+       if(rs_selectProfilePic.isExhausted()){
+           System.out.println("No Profile Picture");
+           return null;
+       }
+       else{
+           for(Row row : rs_selectProfilePic){;
+               java.util.UUID uuid = row.getUUID("profile_pic");
+               if(uuid == null){
+                   return null;
+               }
+               System.out.println("Profile Pic UUID : " + uuid.toString());
+               profilePic.setUUID(uuid);
+           }
+       }
+       
+       return profilePic;      
    }
    
    /**
@@ -182,7 +209,7 @@ public class PicModel {
             for (Row row : rs_selectUserPics) {
                 Pic picture = new Pic();
                 java.util.UUID UUID = row.getUUID("picid");
-                System.out.println("UUID" + UUID.toString());
+                System.out.println("UUID : " + UUID.toString());
                 picture.setUUID(UUID);
                 Pics.add(picture);
 
