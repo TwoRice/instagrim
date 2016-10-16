@@ -34,6 +34,7 @@ public final class Keyspaces {
                     + "picid uuid,\n"
                     + "user varchar,\n"
                     + "pic_added timestamp,\n"
+                    + "private boolean \n"
                     + "PRIMARY KEY (user,pic_added)\n"
                     + ") WITH CLUSTERING ORDER BY (pic_added desc);";
             String CreateAddressType = "CREATE TYPE if not exists instagrim.address (\n"
@@ -42,12 +43,14 @@ public final class Keyspaces {
                     + "      zip int\n"
                     + "  );";
             String CreateUserProfile = "CREATE TABLE if not exists instagrim.userprofiles (\n"
-                    + "      login text PRIMARY KEY,\n"
-                     + "     password text,\n"
+                    + "      login text,\n"
+                    + "      password text,\n"
                     + "      first_name text,\n"
                     + "      last_name text,\n"
-                    + "      email set<text>,\n"
-                    + "      addresses  map<text, frozen <address>>\n"
+                    + "      email text,\n"
+                    + "      addresses  map<text, frozen <address>>,\n"
+                    + "      profile_pic uuid,\n"
+                    + "      PRIMARY KEY(login,email)\n"
                     + "  );";
             Session session = c.connect();
             try {
