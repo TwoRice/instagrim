@@ -8,7 +8,6 @@ package uk.ac.dundee.computing.aec.instagrim.servlets;
 
 import com.datastax.driver.core.Cluster;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -36,6 +35,14 @@ public class Login extends HttpServlet {
         cluster = CassandraHosts.getCluster();
     }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        
+        RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
+        rd.forward(request, response);
+        
+    }
+    
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -64,15 +71,16 @@ public class Login extends HttpServlet {
             
             session.setAttribute("LoggedIn", lg);
             System.out.println("Session in servlet "+session);
-            RequestDispatcher rd=request.getRequestDispatcher("index.jsp");
-	    rd.forward(request,response);
+            response.sendRedirect("/Instagrim/");
             
         }else{
-            response.sendRedirect("/Instagrim/login.jsp");
+            request.setAttribute("invalidLogin", "Invalid Username or Password");
+            RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
+            rd.forward(request, response);           
         }
         
     }
-
+    
     /**
      * Returns a short description of the servlet.
      *
