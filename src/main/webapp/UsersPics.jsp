@@ -17,7 +17,32 @@
         <%@include file="header.jsp" %>
          
         <article>
-            <h1>Your Images</h1>
+
+            <div class="row" style="padding-top:20px;padding-bottom:20px;">
+                <div class="col-sm-2">
+                    
+                    <div id="profilePic">
+                        <%
+                            Pic profilePic = new Pic();
+                            profilePic = (Pic) request.getAttribute("profilePic");
+                            if(profilePic == null){
+                        %>
+                        <a href="#"><img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture"></a>
+                        <%}else{%>
+                        <a href="##"><img src="/Instagrim/Thumb/<%=profilePic.getSUUID()%>" alt="Profile Picture"></a>
+                        <%}%>
+                    </div>
+                </div>
+                    
+                <div class ="col-sm-2">
+                    <div id="profileName">'s Profile</div>
+                </div>
+                    
+                <div class="col-sm-8"></div>
+                
+            </div>
+
+               
             
             <!--Adds dynamically sized whitespace to left side of page--> 
             <div class="col-xs-1"></div>
