@@ -48,6 +48,28 @@ and open the template in the editor.
 
 
 
+form .row .col-xs-12, .col-lg-6{
+    
+    padding-bottom:20px;
+    
+}
+
+.logRegError {
+    
+    color: #F00;
+    
+}
+
+.instaPromo{
+    
+    height: 500px;
+    background-image: url('instaPromo2.jpg');
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-size: contain;
+    
+}
+
 /*The following help tip code was taken from W3schools.com and tutorialzine.com */
 .helptip{
     
@@ -97,7 +119,28 @@ and open the template in the editor.
 /***************************CSS for image pages********************************/
 /******************************************************************************/
 
+#profilePic{
+    
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    margin: 0 auto;
+    position: relative;
+    
+}
 
+#profilePic img{
+    
+    position: absolute;
+    left: -1000%;
+    right: -1000%;
+    top: -1000%;
+    bottom: -1000%;
+    margin: auto;
+    min-height: 100%;
+    min-width: 100%;
+    
+}
 
 /*The following code was taken from stackoverflow 
 (http://stackoverflow.com/questions/18673900/how-to-center-and-crop-an-image-to-square-with-css) */
