@@ -4,6 +4,7 @@
     Author     : Big Cheesy B
 --%>
 
+<%@page import="java.util.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="uk.ac.dundee.computing.aec.instagrim.stores.Comment"%>
 <!DOCTYPE html>
@@ -16,20 +17,26 @@
         <%@include file="header.jsp" %>
         
         <div class="container">  
+
+            <%
+                LinkedList<Comment> lsComments;
+                lsComments = (LinkedList<Comment>) request.getAttribute("comments");
+                if(lsComments == null){ 
+            %>
             <div class="comment">
-                <%
-                    java.util.LinkedList<Comment> lsComments;
-                    lsComments = (java.util.LinkedList<Comment>) request.getAttribute("comments");
-                    if(lsComments == null){                             
-                %>
                 <span>No Comments</span>
-                <%}else{%>
-                <%
-                    
-                %>
+            </div>    
+            <%}else{
+                Iterator<Comment> i = lsComments.iterator();
+                while(i.hasNext()){
+            %>
+            <div class="comments">
+                Comment : <%=i.next().getComment()%>
             </div>
+            <%}}%>
+
             
-            <form method="POST" action="Commm">
+            <form method="POST" action="postComment">
                 <div class="panel panel-default">         
                     <div class="panel-heading" style="background-color:#555;color:#FFF">Comments</div>     
                         <div class="panel-body">
