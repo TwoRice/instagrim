@@ -15,9 +15,9 @@
         <%@include file="header.jsp" %>
         
         <%
-            sessionUser = null;
+            currUser = null;
             session.invalidate();
-            response.sendRedirect("index.jsp");       
+            response.sendRedirect("/Instagrim/");       
         %>   
     </body>
 </html>
