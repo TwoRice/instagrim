@@ -28,7 +28,7 @@
                 }%>
                 
                 <div class="col-sm-4"><a href="/Instagrim/Upload">Upload</a></div>
-                <div class="col-sm-4"><a href="/Instagrim/Profile/<%=currUser.getUsername()%>">Images</a></div>
+                <div class="col-sm-4"><a href="/Instagrim/Profile/<%=currUser.getUsername()%>">Profile</a></div>
                 <div class="col-sm-4"><a href="/Instagrim/logout.jsp">Logout</a></div>
                 
                 <% }else{ %>
