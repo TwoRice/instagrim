@@ -21,13 +21,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
  *
  * @author Administrator
  */
-@WebFilter(filterName = "ProtectPages", urlPatterns = {"/upload.jsp"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
+@WebFilter(filterName = "ProtectPages", urlPatterns = {"/Upload","/Upload/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
 public class ProtectPages implements Filter {
     
     private static final boolean debug = true;
@@ -38,7 +39,7 @@ public class ProtectPages implements Filter {
     private FilterConfig filterConfig = null;
     
     public ProtectPages() {
-    }    
+    }
     
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
@@ -105,7 +106,7 @@ public class ProtectPages implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        
+                
         if (debug) {
             log("ProtectPages:doFilter()");
         }
@@ -118,10 +119,8 @@ public class ProtectPages implements Filter {
         System.out.println("Session in filter "+session);
         if ((li == null)  || (li.getlogedin()==false)){
                System.out.println("Foward to login");
-                RequestDispatcher rd=request.getRequestDispatcher("/login.jsp");
-		rd.forward(request,response);
-
-            
+                RequestDispatcher rd = request.getRequestDispatcher("/Instagrim/Login");
+		rd.forward(request,response);        
         }
         Throwable problem = null;
         try {
