@@ -38,7 +38,6 @@
                 
                 java.util.LinkedList<Pic> lsPics = pm.getRecentPics();
                 if(lsPics == null){
-                    System.out.println("lspic is null hello");
             %>
             <p>nothing here</p>
             <%
@@ -54,7 +53,6 @@
                 }
                     }
             %>
-}
             
         </article>
         
