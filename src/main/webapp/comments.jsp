@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.Comment"%>
 <!DOCTYPE html>
 <html>
     
@@ -16,7 +17,16 @@
         
         <div class="container">  
             <div class="comment">
-                
+                <%
+                    java.util.LinkedList<Comment> lsComments;
+                    lsComments = (java.util.LinkedList<Comment>) request.getAttribute("comments");
+                    if(lsComments == null){                             
+                %>
+                <span>No Comments</span>
+                <%}else{%>
+                <%
+                    
+                %>
             </div>
             
             <form method="POST" action="Commm">
