@@ -86,7 +86,7 @@
                             <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
                     </div>
                     <div class="commentLink">
-                        <a href="/Instagrim/Comments/"<%=p.getSUUID()%>>Comments</a>
+                        <a href="/Instagrim/Comments/<%=p.getSUUID()%>">Comments</a>
                     </div>    
                 </div>        
             <%
@@ -100,7 +100,7 @@
                         <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>    
                     </div>
                     <div class="commentLink">
-                        <a href="/Instagrim/Comments">Comments</a>
+                        <a href="/Instagrim/Comments/<%=p.getSUUID()%>">Comments</a>
                     </div>     
                 </div>
             <!--closing tag for the large device div-->
