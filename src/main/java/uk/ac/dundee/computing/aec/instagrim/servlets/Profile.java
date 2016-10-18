@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.LinkedList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -68,7 +69,7 @@ public class Profile extends HttpServlet {
     private void displayProfile(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel pm = new PicModel();
         pm.setCluster(cluster);        
-        java.util.LinkedList<Pic> lsPics;
+        LinkedList<Pic> lsPics;
         Pic profilePic = new Pic();
         RequestDispatcher rd;
         
