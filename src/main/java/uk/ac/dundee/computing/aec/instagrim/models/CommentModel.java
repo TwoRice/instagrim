@@ -34,9 +34,9 @@ public class CommentModel {
         this.cluster=cluster;      
     }
     
-    public LinkedList<Comment> getCommentsFromPic(UUID picID){
+    public LinkedList<UUID> getCommentsFromPic(UUID picID){
         Session session = cluster.connect("instagrim");
-        LinkedList<Comment> lsComments = new LinkedList<>();
+        LinkedList<UUID> lsComments = new LinkedList<>();
 
         PreparedStatement ps_selectComments = session.prepare("select comments from pics where picid = ?");
         BoundStatement bs_selectComments = new BoundStatement(ps_selectComments);
@@ -51,14 +51,46 @@ public class CommentModel {
             for(Row row : rs_selectComments){
                 Set<UUID> sComments = row.getSet("comments", UUID.class);
                 for(Iterator<UUID> i = sComments.iterator(); i.hasNext();){
-                    Comment comment = new Comment();
                     UUID commentID = i.next();
-                    comment.setUUID(commentID);
-                    lsComments.add(comment);
+                    lsComments.add(commentID);
                 }
             } 
             return lsComments;   
         }
+    }
+    
+    public LinkedList<Comment> getCommentsFromID(LinkedList<UUID> lsCommentIDs){
+        Session session = cluster.connect("instagrim");
+        LinkedList<Comment> lsComments = new LinkedList<>();
+        
+        PreparedStatement ps_selectComments = session.prepare("select user, comment from comment where commentid = ?");
+        BoundStatement bs_selectComments = new BoundStatement(ps_selectComments);
+        ResultSet rs_selectComments = null;
+        
+        for(Iterator<UUID> i = lsCommentIDs.iterator(); i.hasNext();){
+            UUID commentID = i.next();
+            rs_selectComments = session.execute(bs_selectComments.bind(commentID));
+            
+            if(rs_selectComments.isExhausted()){
+                System.out.println("Comment could not be found");
+            }
+            else{
+                for(Row row : rs_selectComments){
+                    Comment comment = new Comment();
+                    String user = row.getString("user");
+                    String commentText = row.getString("comment");
+                    
+                    System.out.println("inserting " + commentID);
+                    comment.setUUID(commentID);
+                    comment.setUser(user);
+                    comment.setComment(commentText);
+                    
+                    lsComments.add(comment);
+                    
+                }
+            }
+        }       
+        return lsComments;     
     }
     
 }
