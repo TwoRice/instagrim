@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.UUID;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
 import org.imgscalr.Scalr.Method;
@@ -56,7 +57,7 @@ public class PicModel {
             String types[]=Convertors.SplitFiletype(type);
             ByteBuffer buffer = ByteBuffer.wrap(b);
             int length = b.length;
-            java.util.UUID picid = convertor.getTimeUUID();
+            UUID picid = convertor.getTimeUUID();
             
             //The following is a quick and dirty way of doing this, will fill the disk quickly !
             Boolean success = (new File("/var/tmp/instagrim/")).mkdirs();
@@ -132,8 +133,8 @@ public class PicModel {
     }
    
    
-   public java.util.LinkedList<Pic> getRecentPics(){
-        java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
+   public LinkedList<Pic> getRecentPics(){
+        LinkedList<Pic> Pics = new LinkedList<>();
         Session session = cluster.connect("instagrim");
         ResultSet rs_selectRecentPics = null;
         
@@ -145,7 +146,7 @@ public class PicModel {
         else{
             for(Row row : rs_selectRecentPics){
                 Pic picture = new Pic();
-                java.util.UUID UUID = row.getUUID("picid");
+                UUID UUID = row.getUUID("picid");
                 System.out.println("UUID" + UUID.toString());
                 picture.setUUID(UUID);
                 Pics.add(picture);  
@@ -171,7 +172,7 @@ public class PicModel {
        }
        else{
            for(Row row : rs_selectProfilePic){;
-               java.util.UUID uuid = row.getUUID("profile_pic");
+               UUID uuid = row.getUUID("profile_pic");
                if(uuid == null){
                    return null;
                }
@@ -189,8 +190,8 @@ public class PicModel {
     * @param User - username for user's pictures to be retrieved
     * @return Linked list fill with the user's pictures
     */ 
-   public java.util.LinkedList<Pic> getPicsForUser(String User) {
-        java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
+   public LinkedList<Pic> getPicsForUser(String User) {
+        LinkedList<Pic> Pics = new LinkedList<>();
         Session session = cluster.connect("instagrim");
         //Prepares SQL statement to retrieve pictures from the database
         PreparedStatement ps_selectUserPics = session.prepare("select picid from userpiclist where user =?");
@@ -208,7 +209,7 @@ public class PicModel {
             //Iterates through pictures in result set and adds them to the linked list
             for (Row row : rs_selectUserPics) {
                 Pic picture = new Pic();
-                java.util.UUID UUID = row.getUUID("picid");
+                UUID UUID = row.getUUID("picid");
                 System.out.println("UUID : " + UUID.toString());
                 picture.setUUID(UUID);
                 Pics.add(picture);
@@ -225,7 +226,7 @@ public class PicModel {
     * @param picid - UUID for picture to be retrieved
     * @return picture retrieved from the database
     */ 
-   public Pic getPic(int image_type, java.util.UUID picid) {
+   public Pic getPic(int image_type, UUID picid) {
         Session session = cluster.connect("instagrim");
         ByteBuffer bImage = null;
         String type = null;
