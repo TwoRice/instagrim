@@ -11,6 +11,7 @@
     <head>
         <title>InstaGrim</title>
         <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
+        <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
