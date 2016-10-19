@@ -20,6 +20,7 @@ import java.util.UUID;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
+import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.models.CommentModel;
 
 
@@ -42,11 +43,32 @@ public class Comments extends HttpServlet {
     }
     
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{     
         //Splits up the url into an array of strings with / delimiter
         String args[] = Convertors.SplitRequestPath(request);
         displayComments(args[2], request, response);
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        HttpSession session = request.getSession();
+        LoggedIn activeUser = (LoggedIn) session.getAttribute("LoggedIn");
+        String args[] = Convertors.SplitRequestPath(request);
+        UUID picID = UUID.fromString(args[2]);
+        
+        if( activeUser == null || activeUser.getlogedin() == false){
+            response.sendRedirect("/Instagrim/Login");
+        }
+        else{
+            CommentModel cm = new CommentModel();
+            cm.setCluster(cluster);
+            String commentText = request.getParameter("commentEntry");
+            System.out.println(commentText);
+            String user = activeUser.getUsername();
+            cm.postNewComment(picID, user, commentText);
+            response.sendRedirect("/Instagrim/Comments/"+args[2]);
+        }
+     
     }
     
     public void displayComments(String picID, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{       
