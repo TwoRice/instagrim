@@ -6,6 +6,8 @@
 package uk.ac.dundee.computing.aec.instagrim.stores;
 
 import java.util.UUID;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -16,6 +18,7 @@ public class Comment {
     private UUID uuid = null;
     private String user = null;
     private String comment = null;
+    private Date timestamp = null;
 
     public UUID getUuid() {
         return uuid;
@@ -41,6 +44,20 @@ public class Comment {
         this.comment = comment;
     }
     
-    
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+   
+    public String formatTimestamp(){
+        String dateString = this.timestamp.toString();
+        dateString = dateString.substring(4);
+        dateString = dateString.replace("BST", "");
+        
+        return dateString;
+    }
     
 }
