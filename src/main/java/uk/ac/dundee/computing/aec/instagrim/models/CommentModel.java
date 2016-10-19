@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Iterator;
+import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
 
 /**
@@ -32,6 +33,22 @@ public class CommentModel {
     
     public void setCluster(Cluster cluster){       
         this.cluster=cluster;      
+    }
+    
+    public void postNewComment(UUID picID, String user, String comment){
+        Session session = cluster.connect("instagrim");
+        UUID uuid = Convertors.getTimeUUID();
+    
+        PreparedStatement ps_insertComment = session.prepare("insert into comment (commentid, user, comment, comment_added) values (?,?,?,?)");
+        String insertCommentID = "update pics set comments = comments + {" + uuid + "} where picid = ?";
+        PreparedStatement ps_insertCommentID = session.prepare(insertCommentID);
+        BoundStatement bs_insertComment = new BoundStatement(ps_insertComment);
+        BoundStatement bs_insertCommentID = new BoundStatement(ps_insertCommentID);        
+        
+        Date postTime = new Date();
+        session.execute(bs_insertComment.bind(uuid, user, comment, postTime));
+        session.execute(bs_insertCommentID.bind(picID));
+              
     }
     
     public LinkedList<UUID> getCommentsFromPic(UUID picID){
@@ -63,7 +80,7 @@ public class CommentModel {
         Session session = cluster.connect("instagrim");
         LinkedList<Comment> lsComments = new LinkedList<>();
         
-        PreparedStatement ps_selectComments = session.prepare("select user, comment from comment where commentid = ?");
+        PreparedStatement ps_selectComments = session.prepare("select user, comment, comment_added from comment where commentid = ?");
         BoundStatement bs_selectComments = new BoundStatement(ps_selectComments);
         ResultSet rs_selectComments = null;
         
@@ -79,11 +96,13 @@ public class CommentModel {
                     Comment comment = new Comment();
                     String user = row.getString("user");
                     String commentText = row.getString("comment");
+                    Date timestamp = row.getTimestamp("comment_added");
                     
                     System.out.println("inserting " + commentID);
                     comment.setUUID(commentID);
                     comment.setUser(user);
                     comment.setComment(commentText);
+                    comment.setTimestamp(timestamp);
                     
                     lsComments.add(comment);
                     
