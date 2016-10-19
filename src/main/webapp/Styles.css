@@ -8,11 +8,18 @@ and open the template in the editor.
     Author     : Administrator
 */
 
+
 /******************************************************************************/
 /***************************CSS for header page********************************/
 /******************************************************************************/
 
 
+
+.headerRow h2{
+    
+    font-family: 'Pacifico', cursive;
+    
+}
 
 /*Removes hyperlink styling on links*/
 .headerRow a:link{
@@ -76,7 +83,7 @@ form .row .col-xs-12, .col-lg-6{
 .instaPromo{
     
     height: 500px;
-    background-image: url('instaPromo2.jpg');
+    background-image: url('instaPromo.jpg');
     background-color: #fff;
     background-repeat: no-repeat;
     background-size: contain;
@@ -225,9 +232,33 @@ form .row .col-xs-12, .col-lg-6{
 /***************************CSS for comment pages******************************/
 /******************************************************************************/
 
-.comment{
-   
+.comments{
+    
+    padding-bottom: 10px;
+    
+}
+
+div.comments > div:nth-of-type(even){
+    
     background-color: #DDD;
-    border: solid #000;
+    
+}
+
+.text{
+    
+    padding: 5px;
+    
+}
+
+.user{
+    
+    padding: 5px;
+    
+}
+
+.timestamp{
+    
+    padding: 5px;
+    text-align: right;
     
 }
