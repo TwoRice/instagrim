@@ -50,7 +50,7 @@ public class PicModel {
         this.cluster = cluster;
     }
 
-    public void insertPic(byte[] b, String type, String name, String user) {
+    public UUID insertPic(byte[] b, String type, String name, String user, boolean profilePic) {
         try {
             Convertors convertor = new Convertors();
 
@@ -73,18 +73,24 @@ public class PicModel {
             Session session = cluster.connect("instagrim");
 
             PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
-            PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
             BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
-            BoundStatement bsInsertPicToUser = new BoundStatement(psInsertPicToUser);
-
             Date DateAdded = new Date();
             session.execute(bsInsertPic.bind(picid, buffer, thumbbuf,processedbuf, user, DateAdded, length,thumblength,processedlength, type, name));
-            session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
+            
+            if(!profilePic){
+                PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
+                BoundStatement bsInsertPicToUser = new BoundStatement(psInsertPicToUser);
+                session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
+            }
+            
             session.close();
+            return picid;
 
         } catch (IOException ex) {
             System.out.println("Error --> " + ex);
+            return null;
         }
+        
     }
 
     public byte[] picresize(String picid,String type) {
@@ -155,35 +161,7 @@ public class PicModel {
        
        return Pics;
    }
-   
-   public Pic getProfilePic(String username){
-       Pic profilePic = new Pic();
-       Session session = cluster.connect("instagrim");
-       
-       PreparedStatement ps_selectProfilePic = session.prepare("select profile_pic from userprofiles where login =?");
-       ResultSet rs_selectProfilePic = null;
-       BoundStatement bs = new BoundStatement(ps_selectProfilePic);
-       
-       rs_selectProfilePic = session.execute(bs.bind(username));
-       
-       if(rs_selectProfilePic.isExhausted()){
-           System.out.println("No Profile Picture");
-           return null;
-       }
-       else{
-           for(Row row : rs_selectProfilePic){;
-               UUID uuid = row.getUUID("profile_pic");
-               if(uuid == null){
-                   return null;
-               }
-               System.out.println("Profile Pic UUID : " + uuid.toString());
-               profilePic.setUUID(uuid);
-           }
-       }
-       
-       return profilePic;      
-   }
-   
+      
    /**
     * Retrieves all of a specific user's pictures from the database
     * 
