@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.UUID;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -133,6 +134,8 @@ public class Image extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String args[] = Convertors.SplitRequestPath(request);
+        
         for (Part part : request.getParts()) {
             System.out.println("Part Name " + part.getName());
 
@@ -154,7 +157,15 @@ public class Image extends HttpServlet {
                 System.out.println("Length : " + b.length);
                 PicModel tm = new PicModel();
                 tm.setCluster(cluster);
-                tm.insertPic(b, type, filename, username);
+                if(args.length == 3){
+                    User us = new User();
+                    us.setCluster(cluster);
+                    UUID picid = tm.insertPic(b, type, filename, username, true);
+                    us.setProfilePic(username, picid);
+                }
+                else{
+                    tm.insertPic(b, type, filename, username, false);
+                }
 
                 is.close();
             }
