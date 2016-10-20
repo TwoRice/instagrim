@@ -22,7 +22,14 @@
                 <div class="col-sm-2">
                     
                     <div id="profilePic">
-                        <a href="#">
+                        <%
+                            String username = (String) request.getAttribute("User");
+                            if(currUser != null && currUser.getUsername().equals(username)){
+                        %>
+                        <a href="/Instagrim/Upload/ProfilePicture">
+                        <%}else{%>
+                        <a href="">
+                        <%}%>    
                             <%
                                 Pic profilePic = new Pic();
                                 profilePic = (Pic) request.getAttribute("profilePic");
@@ -36,11 +43,29 @@
                     </div>
                 </div>
                     
-                <div class ="col-sm-2">
-                    <%
-                        String username = (String) request.getAttribute("User");
-                    %>
+                <div class ="col-sm-1">
                     <div id="profileName"><%=username%>'s Profile</div>
+                </div>
+                
+                <div class="col-sm-1">
+                    <%
+                        if((currUser != null) && (!currUser.getUsername().equals(username))){
+                            boolean following = (boolean) request.getAttribute("following");
+                    %>
+                    <div id="followBtn">
+                        <form method="POST" action="Follow">
+                            <input type="hidden" value="<%=username%>" name="userToFollow">
+                            <input type="hidden" value="<%=currUser.getUsername()%>" name="activeUser">
+                            <%
+                                if(following){      
+                            %>
+                            <input type="submit" class="btn" value="Following">
+                            <%}else{%>
+                            <input type="submit" class="btn" value="Follow">
+                            <%}%>
+                        </form>    
+                    </div>
+                    <%}%>
                 </div>
                     
                 <div class="col-sm-8"></div>
