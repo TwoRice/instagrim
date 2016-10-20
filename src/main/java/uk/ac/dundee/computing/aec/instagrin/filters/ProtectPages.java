@@ -28,7 +28,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
  *
  * @author Administrator
  */
-@WebFilter(filterName = "ProtectPages", urlPatterns = {"/Upload","/Upload/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
+@WebFilter(filterName = "ProtectPages", urlPatterns = {""}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
 public class ProtectPages implements Filter {
     
     private static final boolean debug = true;
