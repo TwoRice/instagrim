@@ -39,7 +39,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
  *
  * @author Big Cheesy B
  */
-@WebServlet(name = "Profile", urlPatterns = {"/Profile", "/Profile/*"})
+@WebServlet(name = "Profile", urlPatterns = {"/Profile", "/Profile/*", "/Follow", "/Follow/*"})
 public class Profile extends HttpServlet {
 
     private Cluster cluster = null;
@@ -54,13 +54,30 @@ public class Profile extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-       
         String args[] = Convertors.SplitRequestPath(request);
         displayProfile(args[2], request, response);
         
     }
-
     
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+    
+        String userToFollow = request.getParameter("userToFollow");
+        String activeUser = request.getParameter("activeUser");
+        User us = new User();
+        us.setCluster(cluster);
+        
+        if(us.checkIfFollowing(userToFollow, activeUser)){
+           us.unFollowUser(userToFollow, activeUser);
+        }
+        else{
+            us.followUser(userToFollow, activeUser);  
+        }
+        
+        response.sendRedirect(userToFollow); 
+
+    }
+  
     /**
      * Requests a linked list filled with a user's pictures from Picture Model
      * 
@@ -68,24 +85,27 @@ public class Profile extends HttpServlet {
      */
     private void displayProfile(String User, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel pm = new PicModel();
-        pm.setCluster(cluster);        
+        User us = new User();
+        pm.setCluster(cluster); 
+        us.setCluster(cluster);
+        HttpSession session = request.getSession();
         LinkedList<Pic> lsPics;
         Pic profilePic = new Pic();
         RequestDispatcher rd;
         
-        //requests the user's profile picture from the pic model
-        profilePic = pm.getProfilePic(User);
-        //Requests a linked list of the user's pictures from the pic model
+        LoggedIn activeUser = (LoggedIn) session.getAttribute("LoggedIn");
+        boolean following = false;
+        if(activeUser != null && activeUser.getlogedin() == true){
+            following = us.checkIfFollowing(User, activeUser.getUsername());
+        }
+
+        profilePic = us.getProfilePic(User);
         lsPics = pm.getPicsForUser(User);
-        //sets request for UserPics.jsp page
         rd = request.getRequestDispatcher("/UsersPics.jsp");        
-        //seta a request attribute to the username for the profile
         request.setAttribute("User", User);
-        //sets a request attribute to the user's profile picture
         request.setAttribute("profilePic", profilePic);
-        //sets an additional request attribute to the linked list of the user's pictures
+        request.setAttribute("following", following);
         request.setAttribute("Pics", lsPics);
-        //forwards request to UserPics.jsp page
         rd.forward(request, response);
 
     }
