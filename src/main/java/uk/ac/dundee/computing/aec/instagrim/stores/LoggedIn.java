@@ -5,6 +5,7 @@
  */
 
 package uk.ac.dundee.computing.aec.instagrim.stores;
+import java.util.UUID;
 
 /**
  *
@@ -13,8 +14,17 @@ package uk.ac.dundee.computing.aec.instagrim.stores;
 public class LoggedIn {
     private boolean logedin=false;
     private String Username=null;
+    private UUID profilePic = null;
     public void LogedIn(){
         
+    }
+
+    public UUID getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(UUID profilePic) {
+        this.profilePic = profilePic;
     }
     
     public void setUsername(String name){
