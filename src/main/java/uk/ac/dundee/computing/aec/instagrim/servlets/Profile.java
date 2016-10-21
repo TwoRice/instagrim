@@ -95,13 +95,23 @@ public class Profile extends HttpServlet {
         
         LoggedIn activeUser = (LoggedIn) session.getAttribute("LoggedIn");
         boolean following = false;
-        if(activeUser != null && activeUser.getlogedin() == true){
-            following = us.checkIfFollowing(User, activeUser.getUsername());
+        if(activeUser != null){
+            if(activeUser.getlogedin() == true){
+                following = us.checkIfFollowing(User, activeUser.getUsername());
+            }
+            if(activeUser.getUsername().equals(User)){
+                rd = request.getRequestDispatcher("/userProfile.jsp");
+            }
+            else{
+                rd = request.getRequestDispatcher("/UsersPics.jsp");
+            }
+        }
+        else{
+            rd = request.getRequestDispatcher("/UsersPics.jsp");
         }
 
         profilePic = us.getProfilePic(User);
-        lsPics = pm.getPicsForUser(User);
-        rd = request.getRequestDispatcher("/UsersPics.jsp");        
+        lsPics = pm.getPicsForUser(User);       
         request.setAttribute("User", User);
         request.setAttribute("profilePic", profilePic);
         request.setAttribute("following", following);
