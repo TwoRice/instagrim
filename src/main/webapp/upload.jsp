@@ -18,7 +18,7 @@
             
             <h3>File Upload</h3>
             
-            <form method="POST" enctype="multipart/form-data" action="Image">
+            <form method="POST" enctype="multipart/form-data" action="/Instagrim/Image">
                 File to upload: <input type="file" name="upfile">
                 <br/>
                 Privacy: <select name="Privacy">
@@ -32,6 +32,13 @@
                 </div>
 
                 <br/><br/>
+                
+                <%
+                    String profilePicture = (String) request.getAttribute("profilePicture");
+                    if(profilePicture != null){
+                %>
+                <input type="hidden" value="profilePicture" name="profilePicture">
+                <%}%>
                 <input type="submit" value="Upload"> to upload the file!
             </form>
 
