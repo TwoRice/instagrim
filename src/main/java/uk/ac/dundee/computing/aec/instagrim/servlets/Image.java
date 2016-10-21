@@ -98,7 +98,10 @@ public class Image extends HttpServlet {
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
                 break;
             case 3:
-                RequestDispatcher rd = request.getRequestDispatcher("upload.jsp");
+                RequestDispatcher rd = request.getRequestDispatcher("/upload.jsp");
+                if(args.length == 3){
+                    request.setAttribute("profilePicture", "profilePicture");
+                }
                 rd.forward(request, response);
             default:
                 error("Bad Operator", response);
@@ -135,13 +138,13 @@ public class Image extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String args[] = Convertors.SplitRequestPath(request);
+        String profilePicture = request.getParameter("profilePicture");
         
         for (Part part : request.getParts()) {
             System.out.println("Part Name " + part.getName());
 
             String type = part.getContentType();
             String filename = part.getSubmittedFileName();
-            
             
             InputStream is = request.getPart(part.getName()).getInputStream();
             int i = is.available();
@@ -157,7 +160,7 @@ public class Image extends HttpServlet {
                 System.out.println("Length : " + b.length);
                 PicModel tm = new PicModel();
                 tm.setCluster(cluster);
-                if(args.length == 3){
+                if(profilePicture != null){
                     User us = new User();
                     us.setCluster(cluster);
                     UUID picid = tm.insertPic(b, type, filename, username, true);
