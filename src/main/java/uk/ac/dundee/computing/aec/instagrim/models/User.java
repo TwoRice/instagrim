@@ -17,8 +17,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.LinkedList;
 import uk.ac.dundee.computing.aec.instagrim.lib.AeSimpleSHA1;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
+import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
  *
@@ -230,6 +232,32 @@ public class User {
        
        return profilePic;      
    }
+    
+    public LinkedList<LoggedIn> searchUsers(String searchString){
+        Session session = cluster.connect("instagrim");
+        LinkedList<LoggedIn> lsUsers = new LinkedList<>();
+        ResultSet rs_searchResults;
+        
+        rs_searchResults = session.execute("select login, profile_pic from userprofiles");
+        
+        if(rs_searchResults.isExhausted()){
+            return null;
+        }
+        else{
+            for(Row row : rs_searchResults){
+                String username = row.getString("login");
+                UUID profilePic = row.getUUID("profile_pic");
+                if(username.contains(searchString)){
+                    LoggedIn user = new LoggedIn();
+                    user.setUsername(username);
+                    user.setProfilePic(profilePic);
+                    lsUsers.add(user);
+                }
+            }
+        }
+        
+        return lsUsers;       
+    }
        
     public String getEmailForUser(String user, Session session){      
         PreparedStatement ps_selectEmail = session.prepare("select email from userprofiles where login = ?");
