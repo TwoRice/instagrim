@@ -136,33 +136,10 @@ form .row .col-xs-12, .col-lg-6{
 
 
 /******************************************************************************/
-/***************************CSS for image pages********************************/
+/***************************CSS for profile pages******************************/
 /******************************************************************************/
 
-#profilePic{
-    
-    width: 200px;
-    height: 200px;
-    overflow: hidden;
-    margin: 0 auto;
-    position: relative;
-    
-}
-
-#profilePic img{
-    
-    position: absolute;
-    left: -1000%;
-    right: -1000%;
-    top: -1000%;
-    bottom: -1000%;
-    margin: auto;
-    min-height: 100%;
-    min-width: 100%;
-    
-}
-
-#profileName{
+.profileName{
     
     word-wrap: break-word;
     
@@ -266,5 +243,29 @@ div.comments > div:nth-of-type(even){
     
     padding: 5px;
     text-align: right;
+    
+}
+
+
+
+/******************************************************************************/
+/***************************CSS for comment pages******************************/
+/******************************************************************************/
+
+.results{
+    padding-top: 40px;
+}
+
+.result{
+    
+    padding-bottom: 20px;
+    
+}
+
+.username{
+    
+    font-size: 30px;
+    padding-top: 50px;
+    text-align: center;
     
 }
