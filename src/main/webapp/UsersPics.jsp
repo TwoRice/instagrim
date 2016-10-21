@@ -21,35 +21,28 @@
             <div class="row" style="padding-top:20px;padding-bottom:20px;">
                 <div class="col-sm-2">
                     
-                    <div id="profilePic">
+                    <div class="thumbnail" style="height:200px;width:200px;">
                         <%
                             String username = (String) request.getAttribute("User");
-                            if(currUser != null && currUser.getUsername().equals(username)){
+                            Pic profilePic = new Pic();
+                            profilePic = (Pic) request.getAttribute("profilePic");
+                            if(profilePic == null){
                         %>
-                        <a href="/Instagrim/Upload/ProfilePicture">
+                        <img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture">
                         <%}else{%>
-                        <a href="">
-                        <%}%>    
-                            <%
-                                Pic profilePic = new Pic();
-                                profilePic = (Pic) request.getAttribute("profilePic");
-                                if(profilePic == null){
-                            %>
-                            <img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture">
-                            <%}else{%>
-                            <img src="/Instagrim/Thumb/<%=profilePic.getSUUID()%>" alt="Profile Picture">
-                            <%}%>
-                        </a>    
+                        <img src="/Instagrim/Thumb/<%=profilePic.getSUUID()%>" alt="Profile Picture">
+                        <%}%>  
                     </div>
+                    
                 </div>
                     
                 <div class ="col-sm-1">
-                    <div id="profileName"><%=username%>'s Profile</div>
+                    <div class="profileName"><%=username%>'s Profile</div>
                 </div>
                 
                 <div class="col-sm-1">
                     <%
-                        if((currUser != null) && (!currUser.getUsername().equals(username))){
+                        if(currUser != null){
                             boolean following = (boolean) request.getAttribute("following");
                     %>
                     <div id="followBtn">
@@ -72,8 +65,6 @@
                 
             </div>
 
-               
-            
             <!--Adds dynamically sized whitespace to left side of page--> 
             <div class="col-xs-1"></div>
             <!--Div in centre of page which contains the images-->
