@@ -28,7 +28,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
  *
  * @author Administrator
  */
-@WebFilter(filterName = "ProtectPages", urlPatterns = {""}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
+@WebFilter(filterName = "ProtectPages", urlPatterns = {"/Upload", "/Upload/*", "/Follwoing", "/Follwoing/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
 public class ProtectPages implements Filter {
     
     private static final boolean debug = true;
@@ -119,7 +119,7 @@ public class ProtectPages implements Filter {
         System.out.println("Session in filter "+session);
         if ((li == null)  || (li.getlogedin()==false)){
                System.out.println("Foward to login");
-                RequestDispatcher rd = request.getRequestDispatcher("/Instagrim/Login");
+                RequestDispatcher rd = request.getRequestDispatcher("/Login");
 		rd.forward(request,response);        
         }
         Throwable problem = null;
