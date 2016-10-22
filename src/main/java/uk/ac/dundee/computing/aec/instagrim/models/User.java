@@ -146,26 +146,34 @@ public class User {
         return null;   
     }
     
-    public boolean checkIfFollowing(String following, String follower){
+    public Set<String> getFollowing(String username){
         Session session = cluster.connect("instagrim");
+        Set<String> sFollowing = null;
         
         PreparedStatement ps_selectFollowing = session.prepare("select following from userprofiles where login = ?");
         BoundStatement bs_selectFollowing = new BoundStatement(ps_selectFollowing);
         ResultSet rs_selectFollowing;
         
-        rs_selectFollowing = session.execute(bs_selectFollowing.bind(follower));
+        rs_selectFollowing = session.execute(bs_selectFollowing.bind(username));
         
         if(!rs_selectFollowing.isExhausted()){
             for(Row row : rs_selectFollowing){
-                Set<String> sFollowing = row.getSet("following", String.class);
-                for(Iterator<String> i = sFollowing.iterator(); i.hasNext();){
-                    if(i.next().equals(following)){
-                        return true;
-                    }
-                }
+                 sFollowing = row.getSet("following", String.class);
             }
         }
         
+        return sFollowing;   
+    }
+    
+    public boolean checkIfFollowing(String following, String follower){
+        
+        Set<String> sFollowing = getFollowing(follower);
+        for(Iterator<String> i = sFollowing.iterator(); i.hasNext();){
+            if(i.next().equals(following)){
+                return true;
+            }
+        }
+            
         return false;
     }
     
