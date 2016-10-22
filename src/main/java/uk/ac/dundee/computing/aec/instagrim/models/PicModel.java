@@ -30,6 +30,8 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.Set;
+import java.util.Iterator;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
 import org.imgscalr.Scalr.Method;
@@ -50,7 +52,7 @@ public class PicModel {
         this.cluster = cluster;
     }
 
-    public UUID insertPic(byte[] b, String type, String name, String user, boolean profilePic) {
+    public UUID insertPic(byte[] b, String type, String name, String user, String privacy, boolean profilePic) {
         try {
             Convertors convertor = new Convertors();
 
@@ -78,9 +80,11 @@ public class PicModel {
             session.execute(bsInsertPic.bind(picid, buffer, thumbbuf,processedbuf, user, DateAdded, length,thumblength,processedlength, type, name));
             
             if(!profilePic){
-                PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
+                boolean Private = (privacy.equals("Private")) ? true : false;
+                
+                PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added, private) values(?,?,?,?)");
                 BoundStatement bsInsertPicToUser = new BoundStatement(psInsertPicToUser);
-                session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
+                session.execute(bsInsertPicToUser.bind(picid, user, DateAdded,Private));
             }
             
             session.close();
@@ -144,7 +148,7 @@ public class PicModel {
         Session session = cluster.connect("instagrim");
         ResultSet rs_selectRecentPics = null;
         
-        rs_selectRecentPics = session.execute("select picid from userpiclist");
+        rs_selectRecentPics = session.execute("select picid,private from userpiclist");
         if(rs_selectRecentPics.isExhausted()){
             System.out.println("No Images returned");
             return null;
@@ -152,14 +156,45 @@ public class PicModel {
         else{
             for(Row row : rs_selectRecentPics){
                 Pic picture = new Pic();
-                UUID UUID = row.getUUID("picid");
-                System.out.println("UUID" + UUID.toString());
-                picture.setUUID(UUID);
-                Pics.add(picture);  
+                boolean Private = row.getBool("private");
+                if(!Private){
+                    UUID UUID = row.getUUID("picid");
+                    System.out.println("UUID" + UUID.toString());
+                    picture.setUUID(UUID);
+                    Pics.add(picture);  
+                }
             }
         }
        
        return Pics;
+   }
+   
+   public LinkedList<Pic> getFollowingPics(String user){
+       Session session = cluster.connect("instagrim");
+       LinkedList<Pic> Pics = new LinkedList<>();
+       User us = new User();
+       us.setCluster(cluster);
+       Set<String> following;
+       
+       following = us.getFollowing(user);
+       for(Iterator<String> i = following.iterator(); i.hasNext();){
+           PreparedStatement ps_selectFollowingPics = session.prepare("select picid from userpiclist where user = ?");
+           BoundStatement bs_selectFollowingPics = new BoundStatement(ps_selectFollowingPics);
+           ResultSet rs_selectFollowingPics;
+           
+           rs_selectFollowingPics = session.execute(bs_selectFollowingPics.bind(i.next()));
+           if(!rs_selectFollowingPics.isExhausted()){
+               for(Row row : rs_selectFollowingPics){
+                    Pic picture = new Pic();
+                    UUID uuid = row.getUUID("picid");
+                    System.out.println("UUID" + uuid.toString());
+                    picture.setUUID(uuid);
+                    Pics.add(picture);  
+               }
+           }
+       }
+       
+       return Pics;    
    }
       
    /**
