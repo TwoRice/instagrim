@@ -30,29 +30,21 @@
         <%@include file="header.jsp" %>
         
         <article>         
-            <h1>Recent</h1>
-            <% 
-                Cluster cluster = CassandraHosts.getCluster();
-                PicModel pm = new PicModel();
-                pm.setCluster(cluster);
-                
-                java.util.LinkedList<Pic> lsPics = pm.getRecentPics();
+            <%
+                LinkedList<Pic> lsPics = (LinkedList<Pic>) session.getAttribute("Pics");
                 if(lsPics == null){
             %>
             <p>nothing here</p>
             <%
                 }else{
-                    Iterator<Pic> iterator;
-                    iterator = lsPics.iterator();
-                    while (iterator.hasNext()) {
-                        Pic p = (Pic) iterator.next();
+                    Iterator<Pic> i;
+                    i = lsPics.iterator();
+                    while(i.hasNext()){
+                        Pic p = (Pic) i.next();
             %>
             <a href="/Instagrim/Image/<%=p.getSUUID()%>" >
             <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
-            <%
-                }
-                    }
-            %>
+            <%}}%>
             
         </article>
         
