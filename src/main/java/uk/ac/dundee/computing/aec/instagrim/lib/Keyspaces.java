@@ -53,7 +53,6 @@ public final class Keyspaces {
                     + "      email text,\n"
                     + "      profile_pic uuid,\n"
                     + "      following set<text>,\n"
-                    + "      follower_count int,\n"
                     + "      PRIMARY KEY(login,email)\n"
                     + "  );";
             Session session = c.connect();
