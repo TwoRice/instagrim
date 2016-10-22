@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.LinkedList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -40,7 +41,9 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Image/*",
     "/Thumb/*",
     "/Upload/",
-    "/Upload/*"
+    "/Upload/*",
+    "/Home",
+    "/Home/*"
 })
 @MultipartConfig
 
@@ -61,6 +64,7 @@ public class Image extends HttpServlet {
         CommandsMap.put("Image", 1);
         CommandsMap.put("Thumb", 2);
         CommandsMap.put("Upload", 3);
+        CommandsMap.put("Home", 4);
 
     }
 
@@ -79,6 +83,7 @@ public class Image extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //Splits Url arguments up with / delimiter
         String args[] = Convertors.SplitRequestPath(request);
+        RequestDispatcher rd;
         int command;
         try {
             //Gets first argument from url and converts it to its integer value (see public Image())
@@ -98,11 +103,18 @@ public class Image extends HttpServlet {
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
                 break;
             case 3:
-                RequestDispatcher rd = request.getRequestDispatcher("/upload.jsp");
+                rd = request.getRequestDispatcher("/upload.jsp");
                 if(args.length == 3){
-                    request.setAttribute("profilePicture", "profilePicture");
+                    if(args[2].equals("ProfilePicture")){
+                        request.setAttribute("profilePicture", "profilePicture");
+                    }
+                    else{
+                        error("Bad Operator", response);
+                    }
                 }
                 rd.forward(request, response);
+            case 4:
+                DisplayHome(args[2], request, response);
             default:
                 error("Bad Operator", response);
         }
@@ -117,7 +129,6 @@ public class Image extends HttpServlet {
     private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
         PicModel pm = new PicModel();
         pm.setCluster(cluster);
-  
         
         //Requests the picture with the UUID from the url from the pic model
         Pic p = pm.getPic(type,java.util.UUID.fromString(Image));
@@ -135,10 +146,35 @@ public class Image extends HttpServlet {
         }
         out.close();
     }
+    
+    private void DisplayHome(String filter, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        PicModel pm = new PicModel();
+        pm.setCluster(cluster);
+        LinkedList<Pic> lsPics = new LinkedList<>();
+        HttpSession session = request.getSession();
+        RequestDispatcher rd;
+        LoggedIn activeUser = (LoggedIn) session.getAttribute("LoggedIn");
+        
+        if(filter.equals("All")){
+            lsPics = pm.getRecentPics();
+        }
+        else if(filter.equals("Following")){
+            lsPics = pm.getFollowingPics(activeUser.getUsername());
+        }
+        else{
+            error("Bad Operator", response);
+        }
+        
+        session.setAttribute("Pics", lsPics);
+        response.sendRedirect("/Instagrim/");
+    
+    }
+            
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String args[] = Convertors.SplitRequestPath(request);
         String profilePicture = request.getParameter("profilePicture");
+        String privacy = request.getParameter("Privacy");
         
         for (Part part : request.getParts()) {
             System.out.println("Part Name " + part.getName());
@@ -163,11 +199,11 @@ public class Image extends HttpServlet {
                 if(profilePicture != null){
                     User us = new User();
                     us.setCluster(cluster);
-                    UUID picid = tm.insertPic(b, type, filename, username, true);
+                    UUID picid = tm.insertPic(b, type, filename, username, privacy, true);
                     us.setProfilePic(username, picid);
                 }
                 else{
-                    tm.insertPic(b, type, filename, username, false);
+                    tm.insertPic(b, type, filename, username, privacy, false);
                 }
 
                 is.close();
