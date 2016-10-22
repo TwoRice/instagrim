@@ -21,7 +21,7 @@
             <div class="row" style="padding-top:20px;padding-bottom:20px;">
                 <div class="col-sm-2">
                     
-                    <div class="profilePic">
+                    <div class="thumbnail" style="height:200px;width:200px;">
                         <a href="/Instagrim/Upload/ProfilePicture">
                             <%
                                 String username = currUser.getUsername();
