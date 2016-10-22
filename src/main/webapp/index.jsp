@@ -35,16 +35,25 @@
                 if(lsPics == null){
             %>
             <p>nothing here</p>
-            <%
-                }else{
-                    Iterator<Pic> i;
-                    i = lsPics.iterator();
-                    while(i.hasNext()){
-                        Pic p = (Pic) i.next();
-            %>
-            <a href="/Instagrim/Image/<%=p.getSUUID()%>" >
-            <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
-            <%}}%>
+            <div class="container">
+                <%
+                    }else{
+                        Iterator<Pic> i;
+                        i = lsPics.iterator();
+                        while(i.hasNext()){
+                            Pic p = (Pic) i.next();
+                %>
+                <div class="row" style="padding-bottom:50px;">
+                    <div class="thumbnail" style="height:400px;width:400px;">
+                        <a href="/Instagrim/Image/<%=p.getSUUID()%>" >
+                        <img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/>
+                    </div>
+                    <div class="commentLink" style="font-size: 20px;">
+                        <a href="/Instagrim/Comments/<%=p.getSUUID()%>">Comments</a>
+                    </div>
+                </div>
+                <%}}%>
+            </div>
             
         </article>
         
