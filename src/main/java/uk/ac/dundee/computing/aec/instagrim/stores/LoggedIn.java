@@ -8,7 +8,8 @@ package uk.ac.dundee.computing.aec.instagrim.stores;
 import java.util.UUID;
 
 /**
- *
+ * Temporary Store for a user (primarily used for the currently logged in user) which contains
+ * getters and setters for various fields
  * @author Administrator
  */
 public class LoggedIn {

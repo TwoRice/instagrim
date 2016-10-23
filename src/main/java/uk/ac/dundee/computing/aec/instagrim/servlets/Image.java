@@ -20,10 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
@@ -60,7 +56,7 @@ public class Image extends HttpServlet {
      */
     public Image() {
         super();
-        //Maps url patterns "Image", "Images", "Thumb" to an integer in a hash map
+        //Maps url patterns "Image", "Images", "Thumb" and "Home" to an integer in a hash map
         CommandsMap.put("Image", 1);
         CommandsMap.put("Thumb", 2);
         CommandsMap.put("Upload", 3);
@@ -104,6 +100,8 @@ public class Image extends HttpServlet {
                 break;
             case 3:
                 rd = request.getRequestDispatcher("/upload.jsp");
+                //Tells the jsp page that the upload page is being used to upload a profile picture
+                //if the url contain profile picture
                 if(args.length == 3){
                     if(args[2].equals("ProfilePicture")){
                         request.setAttribute("profilePicture", "profilePicture");
@@ -147,17 +145,24 @@ public class Image extends HttpServlet {
         out.close();
     }
     
+    /**
+     * Method
+     * @param filter - Determines whether to display all pictures or following pictures
+     */
     private void DisplayHome(String filter, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         PicModel pm = new PicModel();
         pm.setCluster(cluster);
         LinkedList<Pic> lsPics = new LinkedList<>();
         HttpSession session = request.getSession();
         RequestDispatcher rd;
+        //Gets the object for the currently logged in user
         LoggedIn activeUser = (LoggedIn) session.getAttribute("LoggedIn");
         
+        //Gets all the public pictures from the model if the filter is All
         if(filter.equals("All")){
             lsPics = pm.getRecentPics();
         }
+        //Gets all the pictures for the uer's the user is following if the filter is Following contains
         else if(filter.equals("Following")){
             lsPics = pm.getFollowingPics(activeUser.getUsername());
         }
@@ -165,15 +170,22 @@ public class Image extends HttpServlet {
             error("Bad Operator", response);
         }
         
+        //Sends the list of pics back to the jsp page
         session.setAttribute("Pics", lsPics);
         response.sendRedirect("/Instagrim/");
     
     }
             
 
+    /**
+     * Post method for the upload form which sends the relevant data to the Pic Model to be uploaded to
+     * the database
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String args[] = Convertors.SplitRequestPath(request);
+        //Gets whether or not the picture being uploaded is a profile picture
         String profilePicture = request.getParameter("profilePicture");
+        //Gets whether or not the image is being uploaded as private
         String privacy = request.getParameter("Privacy");
         
         for (Part part : request.getParts()) {
@@ -196,12 +208,14 @@ public class Image extends HttpServlet {
                 System.out.println("Length : " + b.length);
                 PicModel tm = new PicModel();
                 tm.setCluster(cluster);
+                //Uploads the picture as a profile picture
                 if(profilePicture != null){
                     User us = new User();
                     us.setCluster(cluster);
                     UUID picid = tm.insertPic(b, type, filename, username, privacy, true);
                     us.setProfilePic(username, picid);
                 }
+                //Uploads the picture as a regular image
                 else{
                     tm.insertPic(b, type, filename, username, privacy, false);
                 }

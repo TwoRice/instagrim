@@ -1,4 +1,7 @@
-<%-- 
+<%--
+    Specific Profile page for the profile of the user currently logged in. Contains
+    additional features like upload profile picture etc.
+
     Document   : UsersProfile
     Created on : Sep 24, 2014, 2:52:48 PM
     Author     : Administrator
@@ -22,11 +25,14 @@
                 <div class="col-sm-2">
                     
                     <div class="thumbnail" style="height:200px;width:200px;">
+                        <%--Link to upload a new profile picture--%>
                         <a href="/Instagrim/Upload/ProfilePicture">
                             <%
+                                //Gets the username and profile picture from the servlet
                                 String username = currUser.getUsername();
                                 Pic profilePic = new Pic();
                                 profilePic = (Pic) request.getAttribute("profilePic");
+                                //Displays the default profile picture if profile picture comes back null
                                 if(profilePic == null){
                             %>
                             <img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture">
@@ -46,7 +52,6 @@
                 
             </div>
                 
-            <!--Adds dynamically sized whitespace to left side of page--> 
             <div class="col-xs-1"></div>
             <!--Div in centre of page which contains the images-->
             <div class="col-xs-10">

@@ -18,14 +18,11 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.utils.Bytes;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.LinkedList;
@@ -40,6 +37,10 @@ import uk.ac.dundee.computing.aec.instagrim.lib.*;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 //import uk.ac.dundee.computing.aec.stores.TweetStore;
 
+/**
+ * Model which communicates with the database for all operations on the pic and userpiclist tables
+ * @author Big Cheesy B
+ */
 public class PicModel {
 
     Cluster cluster;
@@ -52,6 +53,16 @@ public class PicModel {
         this.cluster = cluster;
     }
 
+    /**
+     * Method to add a single picture to the database
+     * @param b - array of bytes for the image
+     * @param type
+     * @param name - filename of the image
+     * @param user - username for the user who uploaded the image
+     * @param privacy - whether the image is public or private
+     * @param profilePic - whether or not the image is a profile picture
+     * @return 
+     */
     public UUID insertPic(byte[] b, String type, String name, String user, String privacy, boolean profilePic) {
         try {
             Convertors convertor = new Convertors();
@@ -59,6 +70,7 @@ public class PicModel {
             String types[]=Convertors.SplitFiletype(type);
             ByteBuffer buffer = ByteBuffer.wrap(b);
             int length = b.length;
+            //Generates a UUID for the image
             UUID picid = convertor.getTimeUUID();
             
             //The following is a quick and dirty way of doing this, will fill the disk quickly !
@@ -66,9 +78,11 @@ public class PicModel {
             FileOutputStream output = new FileOutputStream(new File("/var/tmp/instagrim/" + picid));
 
             output.write(b);
+            //Gets byte array for the thumbnail
             byte []  thumbb = picresize(picid.toString(),types[1]);
             int thumblength= thumbb.length;
             ByteBuffer thumbbuf=ByteBuffer.wrap(thumbb);
+            //Gets byte array for the black and white version of the image
             byte[] processedb = picdecolour(picid.toString(),types[1]);
             ByteBuffer processedbuf=ByteBuffer.wrap(processedb);
             int processedlength=processedb.length;
@@ -76,10 +90,13 @@ public class PicModel {
 
             PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
             BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
+            //Gets a timestamp for the image upload
             Date DateAdded = new Date();
             session.execute(bsInsertPic.bind(picid, buffer, thumbbuf,processedbuf, user, DateAdded, length,thumblength,processedlength, type, name));
             
+            //Adds the image to the user pic list if the image is not a profile picture
             if(!profilePic){
+                //Converts the privacy string to a boolean value
                 boolean Private = (privacy.equals("Private")) ? true : false;
                 
                 PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added, private) values(?,?,?,?)");
@@ -97,6 +114,12 @@ public class PicModel {
         
     }
 
+    /**
+     * Takes an image and creates a thumbnail for it
+     * @param picid - ID for the image to be resized
+     * @param type
+     * @return - byte array for the thumbnail
+     */
     public byte[] picresize(String picid,String type) {
         try {
             BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
@@ -114,6 +137,12 @@ public class PicModel {
         return null;
     }
     
+    /**
+     * Takes an image and applies a black and white filter to it
+     * @param picid - ID for the image to be processed
+     * @param type
+     * @return - byte array for the black and white image 
+     */
     public byte[] picdecolour(String picid,String type) {
         try {
             BufferedImage BI = ImageIO.read(new File("/var/tmp/instagrim/" + picid));
@@ -143,6 +172,10 @@ public class PicModel {
     }
    
    
+   /**
+    * Retrieves public images from the database for all users and returns them as a list
+    * @return - Linked list of public images for all users
+    */
    public LinkedList<Pic> getRecentPics(){
         LinkedList<Pic> Pics = new LinkedList<>();
         Session session = cluster.connect("instagrim");
@@ -157,6 +190,7 @@ public class PicModel {
             for(Row row : rs_selectRecentPics){
                 Pic picture = new Pic();
                 boolean Private = row.getBool("private");
+                //Only adds public images to the list
                 if(!Private){
                     UUID UUID = row.getUUID("picid");
                     System.out.println("UUID" + UUID.toString());
@@ -169,6 +203,11 @@ public class PicModel {
        return Pics;
    }
    
+   /**
+    * Retrieves all the images from user's who appear in a user's following list 
+    * @param user - The user who's following set to grab the images from
+    * @return - Linked list of images for following
+    */
    public LinkedList<Pic> getFollowingPics(String user){
        Session session = cluster.connect("instagrim");
        LinkedList<Pic> Pics = new LinkedList<>();
@@ -176,7 +215,9 @@ public class PicModel {
        us.setCluster(cluster);
        Set<String> following;
        
+       //Gets the set of following users from the User Model
        following = us.getFollowing(user);
+       //Select all the pics for each user in the following set
        for(Iterator<String> i = following.iterator(); i.hasNext();){
            PreparedStatement ps_selectFollowingPics = session.prepare("select picid from userpiclist where user = ?");
            BoundStatement bs_selectFollowingPics = new BoundStatement(ps_selectFollowingPics);
@@ -184,6 +225,7 @@ public class PicModel {
            
            rs_selectFollowingPics = session.execute(bs_selectFollowingPics.bind(i.next()));
            if(!rs_selectFollowingPics.isExhausted()){
+               //Adds each image the result set to the Linked List
                for(Row row : rs_selectFollowingPics){
                     Pic picture = new Pic();
                     UUID uuid = row.getUUID("picid");

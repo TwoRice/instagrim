@@ -23,7 +23,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
- *
+ * Model which communicates with the database for all operations in the User table
  * @author Administrator
  */
 public class User {
@@ -32,16 +32,28 @@ public class User {
         
     }
     
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
+    }
+    
+    /**
+     * Checks if a username already exists in the database
+     * @param username - username to check
+     * @return  - whether or not the username already exists
+     */
     public boolean isValidUserName(String username){
         
         Session session = cluster.connect("instagrim");
         ResultSet rs_usernameExists = null;
         
+        //Selects all usernames from the database
         rs_usernameExists = session.execute("select login from userprofiles");
         
         if(!rs_usernameExists.isExhausted()){
             for(Row row : rs_usernameExists){
+                //Converts each username to lower case
                 String storedUsername = row.getString("login").toLowerCase();
+                //Checks if both usernames coverted to lower case are the same
                 username = username.toLowerCase();
                 
                 if(username.equals(storedUsername)){
@@ -53,16 +65,24 @@ public class User {
         return true;              
     }
     
+    /**
+     * Checks if an email address already exists in the database
+     * @param email - email address to check
+     * @return - whether or not the username already exists
+     */
     public boolean isValidEmail(String email){
         
         Session session = cluster.connect("instagrim");
         ResultSet rs_emailExists = null;
         
+        //Selects all emails from the database
         rs_emailExists = session.execute("select email from userprofiles");
         
         if(!rs_emailExists.isExhausted()){
             for(Row row : rs_emailExists){
+                //Converts each email to lower casse
                 String storedEmail = row.getString("email").toLowerCase();
+                //Checks if both emails coverted to lower case are the same
                 email = email.toLowerCase();
                 
                 if(email.equals(storedEmail)){
@@ -75,9 +95,19 @@ public class User {
         
     }
     
+    /**
+     * Adds a new user to the database
+     * @param username - username for the new user
+     * @param Password - password for the new user
+     * @param firstName - new user's first name
+     * @param lastName - new user's last name
+     * @param email - new user's email address
+     * @return - whether or not the user was added successfully
+     */
     public boolean RegisterUser(String username, String Password, String firstName, String lastName, String email){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
+        //Encodes the password
         try {
             EncodedPassword= sha1handler.SHA1(Password);
         }catch (UnsupportedEncodingException | NoSuchAlgorithmException et){
@@ -94,9 +124,16 @@ public class User {
         return true;
     }
     
+    /**
+     * Checks if a username exists in the database and if the password matches up
+     * @param username - username to check
+     * @param Password - password to check
+     * @return - whether or not this is a valid login
+     */
     public boolean loginWithUsername(String username, String Password){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
+        //Encodes the password
         try {
             EncodedPassword= sha1handler.SHA1(Password);
         }catch (UnsupportedEncodingException | NoSuchAlgorithmException et){
@@ -108,6 +145,7 @@ public class User {
         ResultSet rs_usernameCheck = null;
         BoundStatement boundStatement = new BoundStatement(ps_usernameCheck);
         rs_usernameCheck = session.execute(boundStatement.bind(username));
+        //Checks the encoded passwords against each other if the username exists
         if(!rs_usernameCheck.isExhausted()) {
             for (Row row : rs_usernameCheck) {
                 
@@ -120,9 +158,16 @@ public class User {
         return false;  
     }
     
+    /**
+     * Checks if an email exists in the database and if the password matches up
+     * @param email - email to check
+     * @param password - password to check
+     * @return 
+     */
     public String loginWithEmail(String email, String password){
         AeSimpleSHA1 sha1handler=  new AeSimpleSHA1();
         String EncodedPassword=null;
+        //Encodes the password
         try{
         EncodedPassword= sha1handler.SHA1(password);
         }catch (UnsupportedEncodingException | NoSuchAlgorithmException et){
@@ -134,6 +179,7 @@ public class User {
         BoundStatement bs = new BoundStatement(ps_emailCheck);
         ResultSet rs_emailCheck = session.execute(bs.bind(email));
 
+        //Checks the encoded passwords against each other if the email exists
         if(!rs_emailCheck.isExhausted()){
             for(Row row : rs_emailCheck){ 
 
@@ -146,6 +192,11 @@ public class User {
         return null;   
     }
     
+    /**
+     * Retrieves a set of username that a particular user follows
+     * @param username - The follower's username
+     * @return - Set of usernames
+     */
     public Set<String> getFollowing(String username){
         Session session = cluster.connect("instagrim");
         Set<String> sFollowing = null;
@@ -165,9 +216,17 @@ public class User {
         return sFollowing;   
     }
     
+    /**
+     * Checks if a user has another user in their following set
+     * @param following - The username to check for in the set
+     * @param follower - The username to grab the set for
+     * @return - Whether or not the username appears in the user's following set
+     */
     public boolean checkIfFollowing(String following, String follower){
         
+        //Gets the set of following for the user
         Set<String> sFollowing = getFollowing(follower);
+        //Iterates through each username in the set and checks if it matches
         for(Iterator<String> i = sFollowing.iterator(); i.hasNext();){
             if(i.next().equals(following)){
                 return true;
@@ -177,6 +236,11 @@ public class User {
         return false;
     }
     
+    /**
+     * Adds a username to a user's following set
+     * @param following - username to add to the set
+     * @param follower  - The username for the set to be added to
+     */
     public void followUser(String following, String follower){
         Session session = cluster.connect("instagrim");
         String email = getEmailForUser(follower, session);
@@ -188,10 +252,11 @@ public class User {
         session.execute(bs_followUser.bind(follower, email)); 
     }
     
-       public void setCluster(Cluster cluster) {
-        this.cluster = cluster;
-    }
-       
+    /**
+     * Removes a username from a user's following set
+     * @param following - username to be removed from set
+     * @param follower - username for the set to be removed from
+     */
     public void unFollowUser(String following, String follower){
         Session session = cluster.connect("instagrim");
         String email = getEmailForUser(follower, session);
@@ -203,6 +268,11 @@ public class User {
         session.execute(bs_followUser.bind(follower, email)); 
     }
     
+    /**
+     * Sets the profile pic field for a user to the uuid for their profile picture
+     * @param user - username for the user to set picture for
+     * @param picid - UUID for the profile picture
+     */
     public void setProfilePic(String user, UUID picid){
         Session session = cluster.connect("instagrim");
         String email = getEmailForUser(user, session);
@@ -213,6 +283,11 @@ public class User {
         session.execute(bs_insertProfilePic.bind(picid,user,email));
     }
     
+    /**
+     * Gets the UUID for a user's profile picture
+     * @param username - username to get the profile picture from
+     * @return - Picture object with the UUID for the profile picture
+     */
     public Pic getProfilePic(String username){
        Session session = cluster.connect("instagrim");
        Pic profilePic = new Pic();
@@ -241,6 +316,11 @@ public class User {
        return profilePic;      
    }
     
+    /**
+     * Takes a search string and returns all user's who's usernames contain the string
+     * @param searchString - string to be searched
+     * @return - List of users who match the search string
+     */
     public LinkedList<LoggedIn> searchUsers(String searchString){
         Session session = cluster.connect("instagrim");
         LinkedList<LoggedIn> lsUsers = new LinkedList<>();
@@ -253,9 +333,9 @@ public class User {
         }
         else{
             for(Row row : rs_searchResults){
-                String username = row.getString("login");
+                String username = row.getString("login").toLowerCase();
                 UUID profilePic = row.getUUID("profile_pic");
-                if(username.contains(searchString)){
+                if(username.toLowerCase().contains(searchString)){
                     LoggedIn user = new LoggedIn();
                     user.setUsername(username);
                     user.setProfilePic(profilePic);
@@ -267,6 +347,12 @@ public class User {
         return lsUsers;       
     }
        
+    /**
+     * Gets the email address for a user
+     * @param user - username for the user
+     * @param session
+     * @return - email address for the user
+     */
     public String getEmailForUser(String user, Session session){      
         PreparedStatement ps_selectEmail = session.prepare("select email from userprofiles where login = ?");
         BoundStatement bs_selectEmail = new BoundStatement(ps_selectEmail);

@@ -1,4 +1,7 @@
-<%-- 
+<%--
+    Jsp page used to register a user for the site. Contains a form to enter registration
+    details and a promo image
+
     Document   : register.jsp
     Created on : Sep 28, 2014, 6:29:51 PM
     Author     : Administrator
@@ -30,14 +33,17 @@
                                 <div class="panel-body">
                                     <div class="form-group">
                                         <%
+                                            //Sets default error status to no errors
                                             String inputError = "";
                                             char[] arrInputError = {1,1,1,1};
 
+                                            //Gets string for which details were inputted incorrectly
                                             inputError = (String) request.getAttribute("inputError");
 
                                             if(inputError == null){  
                                                 inputError = ""; 
                                             }
+                                            //Splits the input error string up into an char array containing either a 1 or a 0
                                             else{
                                                 arrInputError = inputError.toCharArray();
                                             }

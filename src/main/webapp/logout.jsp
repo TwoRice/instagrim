@@ -1,4 +1,6 @@
-<%-- 
+<%--
+    Simple jsp page to log a user out of the website
+
     Document   : logout
     Created on : 06-Oct-2016, 18:12:46
     Author     : Big Cheesy B
@@ -15,6 +17,8 @@
         <%@include file="header.jsp" %>
         
         <%
+            //Sets the Logged In object to null, invalidates the session and then redirects to
+            //the index page
             currUser = null;
             session.invalidate();
             response.sendRedirect("/Instagrim/");       

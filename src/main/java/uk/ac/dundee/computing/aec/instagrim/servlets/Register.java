@@ -20,17 +20,19 @@ import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.models.User;
 
 /**
- *
+ * Servlet which handles requests for the register page
  * @author Administrator
  */
 @WebServlet(name = "Register", urlPatterns = {"/Register", "/Register/*"})
 public class Register extends HttpServlet {
     Cluster cluster=null;
     public void init(ServletConfig config) throws ServletException {
-        // TODO Auto-generated method stub
         cluster = CassandraHosts.getCluster();
     }
     
+    /**
+     * Get method which forwards the user to the register jsp page
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -41,17 +43,13 @@ public class Register extends HttpServlet {
     }
     
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Post method for the register form. Sends the user's details to the user model and registers the user
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
                
+        //Gets the user details from the various inputs on the form
         String username=request.getParameter("username");
         String password=request.getParameter("password");
         String passConfirm=request.getParameter("passConfirm");
@@ -62,73 +60,24 @@ public class Register extends HttpServlet {
                 
         User us=new User();
         us.setCluster(cluster);
+        //Checks whether all the data was input correctly
         boolean uniqueUsername = us.isValidUserName(username);
         boolean uniqueEmail = us.isValidEmail(email);
         boolean validPassword = password.equals(passConfirm);
         boolean validEmail = email.equals(emailConfirm);
                 
+        //Registers the user if there were no input errors
         if((uniqueUsername==true) && (uniqueEmail==true) && (validPassword==true) && (validEmail==true)){
            us.RegisterUser(username, password, firstName, lastName, email); 
            response.sendRedirect("/Instagrim");
         }
         else{
           
+            //Concatinates the errors to a string containing a 0 for an error and a 1 for no error
             String errors = (toNumericStr(uniqueUsername) + toNumericStr(uniqueEmail) + toNumericStr(validPassword) + toNumericStr(validEmail));
-            
-            switch(errors){
-                
-                case "0000":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0001":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0010":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0011":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0100":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0101":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0110":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "0111":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "1000":
-                    request.setAttribute("inputError", errors);
-                    break; 
-                case "1001":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "1010":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "1011":
-                    request.setAttribute("inputError", errors);
-                    break;  
-                case "1100":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "1101":
-                    request.setAttribute("inputError", errors);
-                    break;
-                case "1110":
-                    request.setAttribute("inputError", errors);
-                    break;
-                default:
-                    System.out.println("This definitely shouldn't happen");
-                    System.out.println(errors);
-                    break;
-                
-            }
-
+           
+            //Sends the errors string back to the jsp page
+            request.setAttribute("inputError", errors);
             RequestDispatcher rd = request.getRequestDispatcher("register.jsp");
             rd.forward(request, response);
             
@@ -136,6 +85,11 @@ public class Register extends HttpServlet {
 	    
     }
     
+    /**
+     * Converts a boolean value (true, false) to its numeric equivalent (1,0)
+     * @param b - boolean to be converted
+     * @return - numeric boolean as a string 
+     */
     public static String toNumericStr(final Boolean b){
         return b.booleanValue() ? "1" : "0";
     }

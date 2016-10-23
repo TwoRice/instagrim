@@ -25,10 +25,11 @@ import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
- *
+ * Servlet filter for the website which redirects the user to the login page if they
+ * try to access a page which requires to be logged in
  * @author Administrator
  */
-@WebFilter(filterName = "ProtectPages", urlPatterns = {"/Upload", "/Upload/*", "/Follwoing", "/Follwoing/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
+@WebFilter(filterName = "ProtectPages", urlPatterns = {"/Upload", "/Upload/*", "/Home/Following", "/Home/Following/*"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE})
 public class ProtectPages implements Filter {
     
     private static final boolean debug = true;
@@ -117,10 +118,12 @@ public class ProtectPages implements Filter {
         HttpSession session=httpReq.getSession(false);
 	LoggedIn li=(LoggedIn)session.getAttribute("LoggedIn");
         System.out.println("Session in filter "+session);
+        //Checks if the user is logged in
         if ((li == null)  || (li.getlogedin()==false)){
-               System.out.println("Foward to login");
+                System.out.println("Foward to login");
+                //Forwards the user to the login page
                 RequestDispatcher rd = request.getRequestDispatcher("/Login");
-		rd.forward(request,response);        
+                rd.forward(request,response);        
         }
         Throwable problem = null;
         try {

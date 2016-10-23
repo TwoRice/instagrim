@@ -1,15 +1,10 @@
 <%-- 
+    Index pafe for the website. Displays either all public images or images for a
+    specific user's following
+
     Document   : index
     Created on : Sep 28, 2014, 7:01:44 PM
-    Author     : Administrator
-
-    TODO
-
-    Fix Error when logging in with no username
-    Find difference between PROCESSED and IMAGE type and comment accordingly
-    Add 404 page, see Protect pages
-    Ask Andy how to find python version to work with Cassandra
-
+    Author     : Administrator    
 --%>
 
 
@@ -31,6 +26,7 @@
         
         <article>         
             <%
+                //Gets the list of pictures to be displayed by the servlet
                 LinkedList<Pic> lsPics = (LinkedList<Pic>) session.getAttribute("Pics");
                 if(lsPics == null){
             %>
@@ -38,6 +34,7 @@
             <div class="container">
                 <%
                     }else{
+                        //Iterates through each picture adding it to a div
                         Iterator<Pic> i;
                         i = lsPics.iterator();
                         while(i.hasNext()){

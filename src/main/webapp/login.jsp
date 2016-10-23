@@ -1,4 +1,6 @@
-<%-- 
+<%--
+    Login page for the website. Contains a login form and a promo image
+
     Document   : login.jsp
     Created on : Sep 28, 2014, 12:04:14 PM
     Author     : Administrator
@@ -34,11 +36,14 @@
                                             <div class="col-xs-12">
                                                 <%
                                                     String invalidLogin = "";
+                                                    //Gets error message for failed login from servlet                                                   
                                                     invalidLogin = (String) request.getAttribute("invalidLogin");
+                                                    //Sets the error message to blank if the no error message recieved from servlet
                                                     if(invalidLogin == null){
                                                         invalidLogin = "";
                                                     }
                                                 %>
+                                                <%--Displays error message at top of form--%>
                                                 <span class="logRegError"><%=invalidLogin%></span></br>
                                                 <label class="control-label" for="login">Username/Email Address</label>
                                                 <input type="text" class="form-control" id="login" name="login" required="required">

@@ -1,4 +1,6 @@
-<%-- 
+<%--
+    Head file for all the jsp pages. Contains links to bootstap, stylesheet, meta data etc.
+
     Document   : head
     Created on : 28-Sep-2016, 17:25:32
     Author     : Big Cheesy B

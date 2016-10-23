@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.ac.dundee.computing.aec.instagrim.models;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
@@ -10,7 +5,6 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Set;
@@ -20,7 +14,7 @@ import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
 
 /**
- *
+ * Model which communicates to the database for all operations on the comment table
  * @author Big Cheesy B
  */
 public class CommentModel {
@@ -35,8 +29,16 @@ public class CommentModel {
         this.cluster=cluster;      
     }
     
+    /**
+     * Method to add a comment to the comment table and the uuid for that comment to the
+     * appropriate pic in the pic table
+     * @param picID - ID for the picture the comment is being added to
+     * @param user - Username for the user who posted the comment
+     * @param comment - The content of the comment
+     */
     public void postNewComment(UUID picID, String user, String comment){
         Session session = cluster.connect("instagrim");
+        //Generates a new UUID for the comment
         UUID uuid = Convertors.getTimeUUID();
     
         PreparedStatement ps_insertComment = session.prepare("insert into comment (commentid, user, comment, comment_added) values (?,?,?,?)");
@@ -45,12 +47,17 @@ public class CommentModel {
         BoundStatement bs_insertComment = new BoundStatement(ps_insertComment);
         BoundStatement bs_insertCommentID = new BoundStatement(ps_insertCommentID);        
         
+        //Gets a timestamp for the comment
         Date postTime = new Date();
         session.execute(bs_insertComment.bind(uuid, user, comment, postTime));
-        session.execute(bs_insertCommentID.bind(picID));
-              
+        session.execute(bs_insertCommentID.bind(picID));          
     }
     
+    /**
+     * Method to retrieve all the comments for a picture and return them as a linked list
+     * @param picID - ID for the picture to retrieve all the comments from
+     * @return - a linked list of all the comment UUIDs
+     */
     public LinkedList<UUID> getCommentsFromPic(UUID picID){
         Session session = cluster.connect("instagrim");
         LinkedList<UUID> lsComments = new LinkedList<>();
@@ -76,6 +83,12 @@ public class CommentModel {
         }
     }
     
+    /**
+     * Method which takes a list of comment UUIDs and retrieves all the comment data for each comment ID
+     * from the comment table and adds each as a comment object to a linked list
+     * @param lsCommentIDs - List of comment UUIDs
+     * @return - List of Comment objects
+     */
     public LinkedList<Comment> getCommentsFromID(LinkedList<UUID> lsCommentIDs){
         Session session = cluster.connect("instagrim");
         LinkedList<Comment> lsComments = new LinkedList<>();
@@ -84,6 +97,7 @@ public class CommentModel {
         BoundStatement bs_selectComments = new BoundStatement(ps_selectComments);
         ResultSet rs_selectComments = null;
         
+        //Runs the select statement for each UUID in the lsCommentIDs list
         for(Iterator<UUID> i = lsCommentIDs.iterator(); i.hasNext();){
             UUID commentID = i.next();
             rs_selectComments = session.execute(bs_selectComments.bind(commentID));

@@ -9,7 +9,7 @@ import com.datastax.driver.core.utils.Bytes;
 import java.nio.ByteBuffer;
 
 /**
- *
+ * Temporary store for a picture with getters and setters for various fields
  * @author Administrator
  */
 public class Pic {

@@ -1,4 +1,7 @@
 <%-- 
+    JSP page for profile pages for user's other than the currently logged in user i.e excludes user specific 
+    options like update profile picture etc.
+
     Document   : UsersPics
     Created on : Sep 24, 2014, 2:52:48 PM
     Author     : Administrator
@@ -23,9 +26,11 @@
                     
                     <div class="thumbnail" style="height:200px;width:200px;">
                         <%
+                            //Gets the username and profile picture from the servlet
                             String username = (String) request.getAttribute("User");
                             Pic profilePic = new Pic();
                             profilePic = (Pic) request.getAttribute("profilePic");
+                            //Displays the default profile picture if profile picture comes back null
                             if(profilePic == null){
                         %>
                         <img src="/Instagrim/defaultProfile.gif" alt=" Default Profile Picture">
@@ -42,6 +47,7 @@
                 
                 <div class="col-sm-1">
                     <%
+                        //Displays the follow/following button if the user is logged in
                         if(currUser != null){
                             boolean following = (boolean) request.getAttribute("following");
                     %>
@@ -65,7 +71,6 @@
                 
             </div>
 
-            <!--Adds dynamically sized whitespace to left side of page--> 
             <div class="col-xs-1"></div>
             <!--Div in centre of page which contains the images-->
             <div class="col-xs-10">

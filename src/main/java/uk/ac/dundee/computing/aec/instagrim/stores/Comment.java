@@ -7,10 +7,9 @@ package uk.ac.dundee.computing.aec.instagrim.stores;
 
 import java.util.UUID;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 
 /**
- *
+ * Temporary Store for a single comment with getters and setters for all the fields
  * @author Big Cheesy B
  */
 public class Comment {
@@ -51,13 +50,5 @@ public class Comment {
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
-   
-    public String formatTimestamp(){
-        String dateString = this.timestamp.toString();
-        dateString = dateString.substring(4);
-        dateString = dateString.replace("BST", "");
-        
-        return dateString;
-    }
-    
+       
 }

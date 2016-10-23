@@ -1,4 +1,6 @@
 <%-- 
+    Header file for all the jsp pages. Contains the nav bar
+
     Document   : header
     Created on : 28-Sep-2016, 17:26:11
     Author     : Big Cheesy B
@@ -21,9 +23,13 @@
             <div class="col-xs-4" style="text-align:right;padding-top:20px;"> 
                 
                 <%                     
+                    //Gets the logged in user from the session. Used a lot to determine whether the user is logged in or not
+                    //and get their username
                     LoggedIn currUser = (LoggedIn) session.getAttribute("LoggedIn");
                     if (currUser != null) {
                         String UserName = currUser.getUsername();
+                        //Displays Upload, Profile and Logout for logged in users and
+                        //Login and Register for logged out users
                         if (currUser.getlogedin()) {                           
                 }%>
                 
@@ -52,9 +58,10 @@
 
                 <div class="col-sm-10">
                     <div class="form-group" style="float:right;">
+                        <%--Inline form using the get method which sends a search query through the url to the servlet--%>
                         <form class="form-inline" method="GET" action="/Instagrim/Search">
                             <input type="text" class="form-control" name="searchQuery" required="required" placeholder="Search Users...">
-                            <input type="submit" class="btn btn default">
+                            <input type="submit" class="btn btn default" value="Go">
                         </form>
                     </div>
                 </div>

@@ -21,7 +21,7 @@ import uk.ac.dundee.computing.aec.instagrim.models.User;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 
 /**
- *
+ * Servlet to handle requests for the Login page
  * @author Administrator
  */
 @WebServlet(name = "Login", urlPatterns = {"/Login","/Login/*"})
@@ -35,6 +35,9 @@ public class Login extends HttpServlet {
         cluster = CassandraHosts.getCluster();
     }
 
+    /**
+     * Get method called when the page is loaded which forwards the user to the login.jsp page
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         
@@ -44,17 +47,13 @@ public class Login extends HttpServlet {
     }
     
     /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * Post method which is run when the user submits the login form
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        //Gets the login and password from the form
         String login=request.getParameter("login");
         String password=request.getParameter("password");
         
@@ -63,6 +62,7 @@ public class Login extends HttpServlet {
         us.setCluster(cluster);
         isValid=us.loginWithUsername(login, password);
         if(!isValid){
+            //Checks
             login = us.loginWithEmail(login, password);
             if(login != null){
                 isValid = true;
@@ -70,11 +70,11 @@ public class Login extends HttpServlet {
         }
         HttpSession session=request.getSession();
         System.out.println("Session in servlet "+session);
+        //Sets the LoggedIn object for the user
         if (isValid){
             LoggedIn lg= new LoggedIn();
             lg.setLogedin();
             lg.setUsername(login);
-            //request.setAttribute("LoggedIn", lg);
             
             session.setAttribute("LoggedIn", lg);
             System.out.println("Session in servlet "+session);
